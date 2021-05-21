@@ -1,0 +1,52 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RC2014VM.UI.UserControls"
+             xmlns:RC2014VM="clr-namespace:RC2014VM.UI" 
+             x:Class="RC2014VM.UI.UserControls.CPUFlags"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <RC2014VM:BitReader x:Key="BitReader"/>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Header="Flags" FontWeight="Bold" Margin="15,0,15,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical">
+                    <Label Content="CF" Margin="4,1,1,0" FontWeight="Normal" />
+                    <CheckBox IsChecked="{Binding AF, ConverterParameter=0, Converter={StaticResource BitReader}}" Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="NF" Margin="4,1,1,0" FontWeight="Normal" />
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=1, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="PF" Margin="4,1,1,0" FontWeight="Normal" />
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=2, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Flag3" Margin="4,1,1,0" FontWeight="Normal"/>
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=3, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="HF" Margin="4,1,1,0" FontWeight="Normal"/>
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=4, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Flag5" Margin="4,1,1,0" FontWeight="Normal"/>
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=5, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="ZF" Margin="4,1,1,0" FontWeight="Normal"/>
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=6, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="SF" Margin="4,1,1,0" FontWeight="Normal"/>
+                    <CheckBox Margin="5,-5,1,1" HorizontalAlignment="Left" Width="15" IsChecked="{Binding AF, ConverterParameter=7, Converter={StaticResource BitReader}}" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>
