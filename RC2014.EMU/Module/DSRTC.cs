@@ -1,6 +1,4 @@
-﻿//https://github.com/omarbenhamid/micropython-ds1302-rtc/blob/94cf5c56c49edf7f58839750a0674f97fab95172/DS1302.py#L43
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
