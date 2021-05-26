@@ -60,12 +60,12 @@ The following table (in code for formatting purposes) shows how the date and tim
 */
 ```
  
-* = Unused bits; unwritable and read as 0.
- 0 = should be set to 0 for valid time/calendar range.
- Clock calendar data is BCD. Automatic leap year adjustment.
- PM/AM = 1 for PM; PM/AM = 0 for AM.
- DSE = 1 enable daylight savings adjustment.
- 24/12 = 1 enable 24-hour data representation; 24/12 = 0 enables 12-hour data representation.
- Day-Of-Week coded as Sunday = 1 through Saturday = 7.
- BVF = 1 for valid battery.
- STOP = 1 turns the RTC on; STOP = 0 stops the RTC in back-up mode.
+- \* = Unused bits; unwritable and read as 0.
+- 0 = should be set to 0 for valid time/calendar range.
+- Clock calendar data is BCD. Automatic leap year adjustment.
+- PM/AM = 1 for PM; PM/AM = 0 for AM.
+- DSE = 1 enable daylight savings adjustment.
+- 24/12 = 1 enable 24-hour data representation; 24/12 = 0 enables 12-hour data representation.
+- Day-Of-Week coded as Sunday = 1 through Saturday = 7.
+- BVF = 1 for valid battery.
+- STOP = 1 turns the RTC on; STOP = 0 stops the RTC in back-up mode.
