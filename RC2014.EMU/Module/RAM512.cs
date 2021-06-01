@@ -9,45 +9,50 @@ using System.Threading.Tasks;
 
 namespace RC2014.EMU.Module
 {
-    /*
-     * Memory
-Zeta SBC V2 features a 512 KiB Flash ROM, and 512 KiB SRAM. The Flash ROM is used for the boot loader, monitor, 
-    OS (CP/M and ZSDOS at this point), and ROM disk. The SRAM is battery-backed, and is used for applications and for a RAM disk.
-
-Memory Banks and Paging
-The 64 KiB Z80 memory address space is divided into four 16 KiB memory banks:
-Bank #0 (0000h - 3FFFh
-Bank #1 (4000h - 7FFFh)
-Bank #2 (8000h - 0BFFFh)
-Bank #3 (0C000h - 0FFFFh)
-
-The physical memory (512 KiB Flash ROM and 512 KiB SRAM) is divided into 16 KiB pages:
-Pages 0 - 31 are mapped to the Flash ROM: page #0 starts at ROM address 00000h, and page #31 ends at ROM address 7FFFFh.
-Pages 32 - 63 are mapped to the SRAM: page #32 starts at RAM address 00000h, and page #63 ends at RAM address 7FFFFh.
-
-Page select registers are used to map physical memory pages to the banks in Z80 address space:
-MPGSEL_0 (78h) - Page select register for bank #0
-MPGSEL_1 (79h) - Page select register for bank #1
-MPGSEL_2 (7Ah) - Page select register for bank #2
-MPGSEL_3 (7Bh) - Page select register for bank #3
-
-Following a power on or a hard reset the memory paging mechanism is disabled, 
-    and memory address lines MA19 - MA14 are pulled down. 
-    So that page #0 (ROM addresses 00000h to 03FFF) is mapped to all four banks. 
-    That page should contain a boot loader that (among other things) configures and enables memory paging. 
-    Once page select registers are configured properly the memory paging can be enabled by setting bit 1 of MPGENA (7Ch) register.
-    */
+    /// <summary>
+    /// Zeta SBC V2 features a 512 KiB Flash ROM, and 512 KiB SRAM. The Flash ROM is used for the boot loader, monitor, 
+    ///    OS(CP/M and ZSDOS at this point), and ROM disk.The SRAM is battery-backed, and is used for applications and for a RAM disk.
+    /// </summary>
+    /// <remarks>
+    /// Following a power on or a hard reset the memory paging mechanism is disabled, 
+    /// and memory address lines MA19 - MA14 are pulled down.
+    /// 
+    /// So that page #0 (ROM addresses 00000h to 03FFF) is mapped to all four banks. 
+    /// 
+    /// That page should contain a boot loader that (among other things) configures and enables memory paging.
+    /// 
+    /// Once page select registers are configured properly the memory paging can be enabled by setting bit 1 of MPGENA(7Ch) register.
+    /// </remarks>
     public class RAM512 : IMemoryBank, IPort
     {
-        public const int k16 = 0x4000;
+        public const int k16 = 0x4000;  //Constant to represent 16KiB.
+
+        // Name the port addresses.
         public const ushort MPGSEL_0 = 0x78;
         public const ushort MPGSEL_1 = 0x79;
         public const ushort MPGSEL_2 = 0x7A;
         public const ushort MPGSEL_3 = 0x7B;
         public const ushort MPGENA = 0x7C;
 
+        /// <summary>
+        /// Page select registers are used to map physical memory pages to the banks in Z80 address space:
+        ///     MPGSEL_0(78h) - Page select register for bank #0
+        ///     MPGSEL_1(79h) - Page select register for bank #1
+        ///     MPGSEL_2(7Ah) - Page select register for bank #2
+        ///     MPGSEL_3(7Bh) - Page select register for bank #3
+        /// </summary>
+        public ushort[] HandledPorts => new ushort[]
+            {
+                MPGSEL_0,
+                MPGSEL_1,
+                MPGSEL_2,
+                MPGSEL_3,
+                MPGENA
+            };
+
         public bool debugOn { get; set; } = false;
 
+        //Internal structure to manage the settings for a BANK of memory.
         internal class BankSetting
         {
             public BankSetting(byte page, int low, int high)
@@ -61,6 +66,11 @@ Following a power on or a hard reset the memory paging mechanism is disabled,
             public int HIGH { get; set; }
         }
 
+        /// <summary>
+        /// The physical memory(512 KiB Flash ROM and 512 KiB SRAM) is divided into 16 KiB pages:
+        /// Pages 0 - 31 are mapped to the Flash ROM: page #0 starts at ROM address 00000h, and page #31 ends at ROM address 7FFFFh.
+        /// Pages 32 - 63 are mapped to the SRAM: page #32 starts at RAM address 00000h, and page #63 ends at RAM address 7FFFFh.
+        /// </summary>
         protected internal readonly byte[][] memory = new byte[][]
         {
             new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16],
@@ -76,6 +86,14 @@ Following a power on or a hard reset the memory paging mechanism is disabled,
             new byte[k16], new byte[k16], new byte[k16], new byte[k16]
         };
 
+        /// <summary>
+        /// Memory Banks and Paging
+        /// The 64 KiB Z80 memory address space is divided into four 16 KiB memory banks:
+        ///     Bank #0 (0000h - 3FFFh
+        ///     Bank #1 (4000h - 7FFFh)
+        ///     Bank #2 (8000h - 0BFFFh)
+        ///     Bank #3 (0C000h - 0FFFFh)
+        /// </summary>
         internal BankSetting[] bankSettings = new BankSetting[4] { 
             new BankSetting(0, 0x0000, 0x3FFF),
             new BankSetting(0, 0x4000, 0x7FFF),
@@ -103,15 +121,7 @@ Following a power on or a hard reset the memory paging mechanism is disabled,
                 bankSettings[i].SelectedPage = 0;
         }
 
-        public ushort[] HandledPorts => new ushort[]
-            {
-                MPGSEL_0,
-                MPGSEL_1,
-                MPGSEL_2,
-                MPGSEL_3,
-                MPGENA
-            };
-
+       
         public byte GetData(ushort port)
         {
             switch (port)

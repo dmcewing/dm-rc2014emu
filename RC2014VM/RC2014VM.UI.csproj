@@ -118,13 +118,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ROMS\24886009.BIN">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="ROMS\24886009.rom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="ROMS\RCZ80_std.rom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -132,6 +132,7 @@
     <None Include="ROMS\RCZ80_std_bqrtc.rom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ROMS\Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC2014.EMU\RC2014.EMU.csproj">
