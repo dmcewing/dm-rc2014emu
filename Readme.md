@@ -11,7 +11,7 @@ This project has two main assemblies.  **RC2014.EMU** which contains the emulati
 ### Modular
 While not yet externally configurable the Emulator can be configured like the RC2014 by modifying the _IModules_ arrays in the _MachineConfigurations.cs_ file and pointing to that array by setting the static _CONFIG_ variable in the _Program.cs_ file.  I intend to make this software configurable in the future, but have been distracted by implementing some of the modules.
 
-A [list of modules](Docs\ListOfModules.md) included in the emulator is avaialble.
+A [list of modules](Docs/ListOfModules.md) included in the emulator is avaialble.
 
 ### Monitor
 To access the monitor for the CPU press **F6** in the console once it is running.  This key may change in the future but for now it doesn't appear to conflict with any other use.
