@@ -90,7 +90,7 @@ namespace RC2014.EMU.Module
 
             if (port == CHA_Control || port == CHB_Control)
             {
-                if (controlLoadSecondByte && writeToRegister != 0)
+                if (controlLoadSecondByte && writeToRegister != 0) //Return the requested register.
                 {
                     byte b = registers[writeToRegister];
                     writeToRegister = 0;
@@ -98,7 +98,7 @@ namespace RC2014.EMU.Module
                     return b;
                 }
                 else 
-                {
+                {   //Return RR0
                     controlLoadSecondByte = false;
                     byte b = (InBytes.Count > 0) ? (byte)1 : (byte)0; //RX Char Available.
                     b += (InBytes.Count > 0) ? (byte)2 : (byte)0; //Int Pending
@@ -106,7 +106,7 @@ namespace RC2014.EMU.Module
                     return b;
                 }
             }
-            else if (port == CHA_Data) //Data Port
+            else if (port == CHA_Data) //Data Port  send first byte from buffer.
             {
                 var data = InBytes[0];
                 InBytes.RemoveAt(0);
@@ -121,21 +121,21 @@ namespace RC2014.EMU.Module
             DebugWriteLine(port, DebugLevel.Output, "Portd 0x{0:X2} set data to 0x{1:X2}", value);
             if (port == CHA_Data || port == CHB_Data) //CHA_Data
             {
-                if (value == 0x0C)
+                if (value == 0x0C) //Sending a CLS.
                 {
                     Console.Clear();
                 }
                 else
-                    Output?.Write((char)value);
+                    Output?.Write((char)value); //Output the value written.
             }
             else if (port == CHA_Control || port == CHB_Control)
             {
-                if (controlLoadSecondByte)
+                if (controlLoadSecondByte) //Write the value to the write register.
                 {
                     registers[writeToRegister] = value;
                     controlLoadSecondByte = false;
                 }
-                else
+                else  //Set the register to write to.
                 {
                     controlLoadSecondByte = true;
                     writeToRegister = value & 0x7; //Only last three bits.
