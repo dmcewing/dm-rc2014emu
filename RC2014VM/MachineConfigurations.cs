@@ -13,27 +13,27 @@ namespace RC2014VM.UI
         public static IModule[] RC2014Plus32k => new IModule[]
             {
                 new RAM32(),
-                new PageableROM("ROMS/24886009.BIN",0),
+                new PageableROM("ROMS/24886009.ROM",0),
                 new SIO() { debugLevel = SIO.DebugLevel.None }
             };
 
         public static IModule[] RC2014Plus64k => new IModule[]
             {
                 new RAM64(0x2000, 0xFFFF),
-                new PageableROM("ROMS/24886009.BIN",1,0x1FFF),
+                new PageableROM("ROMS/24886009.ROM",1,0x1FFF),
                 new SIO() { debugLevel = SIO.DebugLevel.None }
             };
         public static IModule[] RC2014PlusMonitor => new IModule[]
             {
                 new RAM64(0x2000, 0xFFFF),
-                new PageableROM("ROMS/24886009.BIN",7,0x1FFF),
+                new PageableROM("ROMS/24886009.ROM",7,0x1FFF),
                 new SIO() { debugLevel = SIO.DebugLevel.None }
             };
 
         public static IModule[] RC2014Plus88 => new IModule[]
           {
                 new RAM64(0x4000, 0xFFFF),
-                new PageableROM("ROMS/24886009.BIN",2,0x3FFF),
+                new PageableROM("ROMS/24886009.ROM",2,0x3FFF),
                 new SIO() { debugLevel = SIO.DebugLevel.None }
           };
 
