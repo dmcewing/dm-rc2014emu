@@ -22,7 +22,7 @@ This module emulates the [Dual Serial Module SIO/2](https://rc2014.co.uk/modules
 ## Function
 The main chip on the SIO board is a [Z84C4206PEG](https://www.alldatasheet.com/view.jsp?Searchword=Z84C4206PEG). This chip contains two RS232 serial interfaces.  The emulator however is concerned  ot with emulating a serial port but providing a terminal interface, therefore the emulation concerns itself with only channel A, and requires a console to be passed to it.
 
-The console is passed via an interface so could in reality be seperate text readers and writers. However for convience some control codes are sent direct to the console violating this interface. (todo: fix it)
+This module now handles all the IO to the `Console` including keypress input.  To enable the processing of keypresses by the host the host can pass a delegate when activating the keyboard loop to intercept and process any keypress it desires.
 
 The SIO contains three read registers for Channel B and two read registeres for Channel A that can be read to obtain the status infromation.  
 
