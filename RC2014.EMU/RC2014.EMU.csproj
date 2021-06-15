@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Core\NotifiedMainRegisters.cs" />
     <Compile Include="Core\NotifiedZ80Registers.cs" />
+    <Compile Include="Helpers\ConsoleHelper.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="IMemoryBank.cs" />
     <Compile Include="IModule.cs" />

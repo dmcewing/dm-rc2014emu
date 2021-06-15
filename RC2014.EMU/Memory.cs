@@ -1,16 +1,25 @@
 ﻿using Konamiman.Z80dotNet;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RC2014.EMU
 {
-    internal class Memory : IMemory
+    internal class Memory : IMemory, INotifyPropertyChanged
     {
         private readonly IMemoryBank[] MemoryBanks;
         private readonly int MAX_MEMORY;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged([CallerMemberName] string propName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+
         public Memory(IMemoryBank[] memoryBanks)
         {
             MemoryBanks = memoryBanks;
@@ -26,8 +35,12 @@ namespace RC2014.EMU
 
         public byte this[int address] 
         { 
-            get => GetContents(address, 1)[0]; 
-            set => SetContents(address, new byte[] { value }); 
+            get => GetContents(address, 1)[0];
+            set
+            {
+                SetContents(address, new byte[] { value });
+                NotifyPropertyChanged();
+            }
         }
 
         public int Size => MAX_MEMORY+1;

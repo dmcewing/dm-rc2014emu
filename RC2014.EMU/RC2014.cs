@@ -84,9 +84,11 @@ namespace RC2014.EMU
 
         public void Restart()
         {
-            _stopRequested = false;
+            _stopRequested = true;
             ((Memory)CPU.Memory).Reset();
             CPU.Reset();
+            CPU.Registers.PC = 0x0;
+            Start();
         }
 
         public void Stop()

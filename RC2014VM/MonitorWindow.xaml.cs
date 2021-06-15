@@ -28,7 +28,7 @@ namespace RC2014VM.UI
         private bool stop = false;
 
         private Program program;
-        
+
         public MonitorWindow()
         {
             InitializeComponent();
@@ -39,21 +39,32 @@ namespace RC2014VM.UI
             program = p;
             InitializeComponent();
         }
+
+        private List<string> GetConfigurationNames()
+        {
+            Type t = typeof(ConfigurationEnum);
+            return t.GetEnumNames().ToList();
+        }
         
         public void SetVM(RC2014.EMU.RC2014 vm)
         {
             rc2014 = vm;
-            stkCPU.DataContext = vm.CPU;
+            stkCPU.Dispatcher.Invoke(() => {
+                stkCPU.DataContext = vm.CPU;
+            });
+            
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            program.ResetVM(true);
+            ConfigurationEnum config;
+            if (Enum.TryParse((string)cboCofiguration.SelectedItem, out config))
+                program.ResetVM(MachineConfigurations.GetConfigurations(config));
         }
 
-        private void WarmReset_Click(object sender, RoutedEventArgs e)
+        private void Step_Click(object sender, RoutedEventArgs e)
         {
-            program.ResetVM(false);
+            program.Step();
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
@@ -70,6 +81,16 @@ namespace RC2014VM.UI
                 program.Stop();
             }
             
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            cboCofiguration.ItemsSource = GetConfigurationNames();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            cboCofiguration.SelectedItem = Program.CONFIG.ToString();
         }
     }
 }

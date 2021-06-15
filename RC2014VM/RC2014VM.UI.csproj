@@ -73,7 +73,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleHelper.cs" />
     <Compile Include="MachineConfigurations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TextBoxOutputter.cs" />

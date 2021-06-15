@@ -1,4 +1,5 @@
 ﻿using Konamiman.Z80dotNet;
+using RC2014.EMU.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RC2014.EMU.Module
@@ -50,9 +52,16 @@ namespace RC2014.EMU.Module
 
         public SIO() => InBytes = new Collection<byte>();
 
-        public void SetOutput(TextWriter output)
+        public void Initalise()
         {
-            Output = output;
+            Console.TreatControlCAsInput = true;
+            ConsoleHelper.SetVT100Out();
+            Output = Console.Out;
+        }
+
+        public void Reset()
+        {
+            Output = null;
         }
 
         public ushort[] HandledPorts => new ushort[]
@@ -163,9 +172,25 @@ namespace RC2014.EMU.Module
 
         }
 
+        public void KeyboardHandler(CancellationToken cancellationToken, KeyPressHandler keyPressHandler)
+        {
+            do
+            {
+                if (Console.KeyAvailable)
+                {
+                    var k = Console.ReadKey(true);
+                    if (!keyPressHandler(k))
+                    {
+                        Write(k.KeyChar);
+                    }
+                }
+            } while (!cancellationToken.IsCancellationRequested);
+        }
+
         private bool controlLoadSecondByte = false;
         private int writeToRegister = 0;
         private readonly byte[] registers = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     }
+
 }

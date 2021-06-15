@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RC2014VM.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" >
+        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" Loaded="Window_Loaded" >
     <Window.Resources>
         <local:BitReader x:Key="BitReader"/>
     </Window.Resources>
@@ -19,10 +19,10 @@
 
         <Grid Grid.Column="0">
             <StackPanel Orientation="Vertical">
+                <ComboBox x:Name="cboCofiguration" Margin="10,30,10,20" />
                 <Button x:Name="Stop" Content="Stop" Margin="10,5" Click="Stop_Click" />
-                <Button x:Name="Step" Content="Step" Margin="10,5"/>
-                <Button x:Name="ResetW" Content="Restart (Warm)" Margin="10,30,10,5" Click="WarmReset_Click" />
-                <Button x:Name="ResetC" Content="Restart (Cold)"  Margin="10,5" Click="Reset_Click" />
+                <Button x:Name="Step" Content="Step" Margin="10,5" Click="Step_Click"/>
+                <Button x:Name="ResetC" Content="Restart"  Margin="10,5" Click="Reset_Click" />
                 <Button x:Name="LoadState" Content="Load" Margin="10,30,10,5"/>
                 <Button x:Name="SaveState" Content="Save" Margin="10,5"/>
             </StackPanel>
@@ -30,6 +30,7 @@
         <Grid Grid.Column="1">
             <StackPanel x:Name="stkCPU" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Orientation="Vertical">
                 <UserControls:CPUStatus DataContext="{Binding Registers}" />
+                
             </StackPanel>
         </Grid>
         <Grid Grid.Column="2">

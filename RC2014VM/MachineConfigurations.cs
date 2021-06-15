@@ -8,49 +8,73 @@ using System.Threading.Tasks;
 
 namespace RC2014VM.UI
 {
+    public enum ConfigurationEnum
+    {
+        RC2014Plus32k,
+        RC2014Plus64k,
+        RC2014PlusMonitor,
+        RC2014Plus88,
+        RC2014Pro,
+        RC2014ProBqrtc
+    }
+
     public static class MachineConfigurations
     {
-        public static IModule[] RC2014Plus32k => new IModule[]
+        public static IModule[] GetConfigurations(ConfigurationEnum configuration)
+        {
+            switch (configuration)
             {
-                new RAM32(),
-                new PageableROM("ROMS/24886009.ROM",0),
-                new SIO() { debugLevel = SIO.DebugLevel.None }
-            };
+                case ConfigurationEnum.RC2014Plus32k:
+                    return new IModule[]
+                        {
+                            new RAM32(),
+                            new PageableROM("ROMS/24886009.ROM",0),
+                            new SIO() { debugLevel = SIO.DebugLevel.None }
+                        };
 
-        public static IModule[] RC2014Plus64k => new IModule[]
-            {
-                new RAM64(0x2000, 0xFFFF),
-                new PageableROM("ROMS/24886009.ROM",1,0x1FFF),
-                new SIO() { debugLevel = SIO.DebugLevel.None }
-            };
-        public static IModule[] RC2014PlusMonitor => new IModule[]
-            {
-                new RAM64(0x2000, 0xFFFF),
-                new PageableROM("ROMS/24886009.ROM",7,0x1FFF),
-                new SIO() { debugLevel = SIO.DebugLevel.None }
-            };
+                case ConfigurationEnum.RC2014Plus64k:
+                    return new IModule[]
+                        {
+                            new RAM64(0x2000, 0xFFFF),
+                            new PageableROM("ROMS/24886009.ROM",1,0x1FFF),
+                            new SIO() { debugLevel = SIO.DebugLevel.None }
+                        };
 
-        public static IModule[] RC2014Plus88 => new IModule[]
-          {
-                new RAM64(0x4000, 0xFFFF),
-                new PageableROM("ROMS/24886009.ROM",2,0x3FFF),
-                new SIO() { debugLevel = SIO.DebugLevel.None }
-          };
+                case ConfigurationEnum.RC2014PlusMonitor:
+                    return new IModule[]
+                        {
+                            new RAM64(0x2000, 0xFFFF),
+                            new PageableROM("ROMS/24886009.ROM",7,0x1FFF),
+                            new SIO() { debugLevel = SIO.DebugLevel.None }
+                        };
+                case ConfigurationEnum.RC2014Plus88:
+                    return new IModule[]
+                        {
+                            new RAM64(0x4000, 0xFFFF),
+                            new PageableROM("ROMS/24886009.ROM",2,0x3FFF),
+                            new SIO() { debugLevel = SIO.DebugLevel.None }
+                        };
 
-        public static IModule[] RC2014Pro => new IModule[]
-            {
-                new RAM512("ROMS/RCZ80_std.rom"),
-                new SIO() { debugLevel = SIO.DebugLevel.None },
-                new DSRTC()
-                //new PortMonitor()
-            };
+                case ConfigurationEnum.RC2014ProBqrtc:
+                    return new IModule[]
+                        {
+                            new RAM512("ROMS/RCZ80_std_BQRTC.rom"),
+                            new SIO() { debugLevel = SIO.DebugLevel.None },
+                            new BQRTC()
+                            //new PortMonitor()
+                        };
 
-        public static IModule[] RC2014ProBqrtc => new IModule[]
-            {
-                new RAM512("ROMS/RCZ80_std_BQRTC.rom"),
-                new SIO() { debugLevel = SIO.DebugLevel.None },
-                new BQRTC()
-                //new PortMonitor()
-            };
+                case ConfigurationEnum.RC2014Pro:
+                default:
+                    return new IModule[]
+                        {
+                            new RAM512("ROMS/RCZ80_std.rom"),
+                            new SIO() { debugLevel = SIO.DebugLevel.None },
+                            new DSRTC()
+                            //new PortMonitor()
+                        };
+            }
+        }
+
     }
 }

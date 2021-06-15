@@ -27,17 +27,15 @@ namespace RC2014VM.UI
         private static List<Task> _tasks = new List<Task>();
         public static Program CURRENT = new Program();
 
-        public static IModule[] CONFIG = MachineConfigurations.RC2014Pro;
+        public static ConfigurationEnum CONFIG = ConfigurationEnum.RC2014Pro;
 
         [STAThread]
         static void Main(string[] args)
         {
-            Console.TreatControlCAsInput = true;
-            ConsoleHelper.SetVT100Out();
-            
-            BuildServiceProvider(CONFIG);
-            InitVM();
-            CURRENT.Start();
+            //Console.TreatControlCAsInput = true;
+            //ConsoleHelper.SetVT100Out();
+
+            CURRENT.ResetVM();
 
             Application app = _app = new Application();
             app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -56,29 +54,33 @@ namespace RC2014VM.UI
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        public void ResetVM(bool cold)
+        internal void Step()
         {
-            if (cold)
-            {
-                CancelThreads();
-                BuildServiceProvider(CONFIG);
-                InitVM();
-                Start();
-            } 
-            else
-            {
-                Restart();
-            }
+            _VM.CPU.ExecuteNextInstruction();
+        }
+
+        public void ResetVM()
+        {
+            ResetVM(MachineConfigurations.GetConfigurations(CONFIG));
+        }
+
+        public void ResetVM(IModule[] configuration)
+        {
+            Stop();
+            CancelThreads();
+            BuildServiceProvider(configuration);
+            InitVM();
+            Start();
         }
 
         public void Stop() =>
-            _VM.Stop();
+            _VM?.Stop();
 
         public void Start() => 
-            _tasks.Add(Task.Factory.StartNew(() => _VM.Start(), _cancellationToken));
+            _tasks.Prepend(Task.Factory.StartNew(() => _VM.Start(), _cancellationToken));
 
         public void Resume() =>
-            _tasks.Add(Task.Factory.StartNew(() => _VM.Resume(), _cancellationToken));
+            _tasks.Prepend(Task.Factory.StartNew(() => _VM.Resume(), _cancellationToken));
 
         public void Restart()
         {
@@ -95,26 +97,13 @@ namespace RC2014VM.UI
             _monitor?.SetVM(vm);
 
             var console = vm.Ports.First(p => p is IConsoleFeed) as IConsoleFeed;
-            console?.SetOutput(Console.Out);
+            console.Initalise();
 
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
 
-            _tasks.Add(Task.Factory.StartNew(() =>
-            {
-                do
-                {
-                    if (Console.KeyAvailable) 
-                    { 
-                        var k = Console.ReadKey(true);
-                        if (!HandleKey(k))
-                        {
-                            console?.Write(k.KeyChar);
-                        }
-                    }
-                } while (!_cancellationToken.IsCancellationRequested);
-            }, _cancellationToken));
-            
+            _tasks.Prepend(Task.Factory.StartNew(() => console.KeyboardHandler(_cancellationToken, HandleKey), _cancellationToken));
+
         }
 
         private static void CancelThreads()
@@ -132,10 +121,11 @@ namespace RC2014VM.UI
                 {
                     _cancellationTokenSource.Dispose();
                     _tasks.Clear();
+                    _cancellationTokenSource = null;
                 }
             }
             Console.Clear();
-            (_VM?.Ports.First(p => p is IConsoleFeed) as IConsoleFeed)?.SetOutput(null);
+            (_VM?.Ports.First(p => p is IConsoleFeed) as IConsoleFeed)?.Reset();
         }
 
         private static void _monitor_Closed(object sender, EventArgs e)
@@ -161,7 +151,7 @@ namespace RC2014VM.UI
             switch (k.Key)
             {
                 case ConsoleKey.F12:
-                    CURRENT.ResetVM(false);
+                    CURRENT.ResetVM();
                     handled = true;
                     break;
                     

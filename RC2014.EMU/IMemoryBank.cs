@@ -15,5 +15,6 @@ namespace RC2014.EMU
         void SetContents(int startAddress, byte[] contents, int startIndex = 0, int? length = null);
 
         void Reset();
+
     }
 }

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RC2014VM.UI
+namespace RC2014.EMU.Helpers
 {
     public static class ConsoleHelper
     {

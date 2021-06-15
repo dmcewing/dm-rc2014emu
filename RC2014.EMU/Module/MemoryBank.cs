@@ -25,7 +25,7 @@ namespace RC2014.EMU.Module
             HI_ADDRESS = end;
             LOW_ADDRESS = start;
 
-            SIZE = (HI_ADDRESS - LOW_ADDRESS)+1;
+            SIZE = HI_ADDRESS - LOW_ADDRESS + 1;
             memory = new byte[SIZE];
         }
 
