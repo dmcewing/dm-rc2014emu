@@ -14,34 +14,48 @@ namespace RC2014.EMU
     {
         public readonly IZ80Processor CPU;
         public readonly IPort[] Ports; // { get; private set; }
+        public readonly IModule[] Modules;
 
         private bool _stopRequested = false;
 
         public RC2014(IZ80Processor cpu, IModule[] modules)
         {
-            IPort[] ports = modules.Where(m => m is IPort).Cast<IPort>().ToArray();
-            IMemoryBank[] memoryBanks = modules.Where(m => m is IMemoryBank).Cast<IMemoryBank>().ToArray();
+            Modules = modules;
+
+            //IPort[] ports = modules.Where(m => m is IPort).Cast<IPort>().ToArray();
+            IPort[] ports = (from m in modules
+                             where m is IPort
+                             select m as IPort).ToArray();
+
+            //IMemoryBank[] memoryBanks = modules.Where(m => m is IMemoryBank).Cast<IMemoryBank>().ToArray();
+            IMemoryBank[] memoryBanks = (from m in modules
+                                         where m is IMemoryBank
+                                         select m as IMemoryBank).ToArray();
 
             CPU = cpu;
-            this.Ports = ports;
+            Ports = ports;
             CPU.Registers = new NotifiedZ80Registers();
             CPU.Memory = new Memory(memoryBanks);
             CPU.AfterInstructionExecution += CPU_AfterInstructionExecution;
 
-            var hiaddress = -1;
+            int hiaddress = -1;
             foreach (IMemoryBank memoryBank in memoryBanks.OrderBy(m => m.LOW_ADDRESS))
             {
-                if (hiaddress+1 < memoryBank.LOW_ADDRESS)
+                if (hiaddress + 1 < memoryBank.LOW_ADDRESS)  //Gap in memory.  Set the gap range as NotConnected.
                 {
                     CPU.SetMemoryAccessMode((ushort)(hiaddress + 1), memoryBank.LOW_ADDRESS - hiaddress, MemoryAccessMode.NotConnected);
                 }
+
                 hiaddress = memoryBank.HI_ADDRESS;
                 CPU.SetMemoryAccessMode((ushort)memoryBank.LOW_ADDRESS, memoryBank.SIZE, memoryBank.MemoryAccessMode);
             }
 
-            foreach (var port in ports)
-                if (port is IZ80InterruptSource)
-                    CPU.RegisterInterruptSource((IZ80InterruptSource)port);
+            foreach (var source in from IPort port in ports
+                                   where port is IZ80InterruptSource
+                                   select port as IZ80InterruptSource)
+            {
+                CPU.RegisterInterruptSource(source);
+            }
 
             CPU.MemoryAccess += OnMemoryAccess;
         }
@@ -49,21 +63,27 @@ namespace RC2014.EMU
         private void CPU_AfterInstructionExecution(object sender, AfterInstructionExecutionEventArgs e)
         {
             if (_stopRequested)
+            {
                 e.ExecutionStopper.Stop();
+            }
         }
 
         private void OnMemoryAccess(object sender, MemoryAccessEventArgs e)
         {
-            if (e.EventType == MemoryAccessEventType.BeforePortRead 
+            if (e.EventType == MemoryAccessEventType.BeforePortRead
                 || e.EventType == MemoryAccessEventType.BeforePortWrite)
             {
-                var port = Ports.FirstOrDefault(p => p.HandledPorts.Contains(e.Address));
+                IPort port = Ports.FirstOrDefault(p => p.HandledPorts.Contains(e.Address));
                 if (port != null)
                 {
                     if (e.EventType == MemoryAccessEventType.BeforePortRead)
+                    {
                         e.Value = port.GetData(e.Address);
+                    }
                     else
+                    {
                         port.SetData(e.Address, e.Value);
+                    }
 
                     e.CancelMemoryAccess = true;
                 }
@@ -85,7 +105,7 @@ namespace RC2014.EMU
         public void Restart()
         {
             _stopRequested = true;
-            ((Memory)CPU.Memory).Reset();
+            (CPU.Memory as Memory)?.Reset();
             CPU.Reset();
             CPU.Registers.PC = 0x0;
             Start();

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +35,7 @@ namespace RC2014.EMU.Module
         protected internal int burst_register = 0;
 
         //----------------------------------
+
 
         protected internal bool Trace { get; set; } = false;
         protected internal bool Trace_Script { get; set; } = false;
@@ -262,6 +265,14 @@ namespace RC2014.EMU.Module
             bool INP = (value & 0x80) != 0;
 
             return (CE, WE, Clk, INP);
+        }
+
+        public void SaveState(IFormatter formatter, Stream saveStream)
+        {
+        }
+
+        public void LoadState(IFormatter formatter, Stream loadStream)
+        {
         }
     }
 }

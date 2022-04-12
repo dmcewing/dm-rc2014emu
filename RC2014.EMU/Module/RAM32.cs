@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace RC2014.EMU.Module
 {
+    [Serializable]
     public class RAM32 : MemoryBank
     {
         public override MemoryAccessMode MemoryAccessMode => MemoryAccessMode.ReadAndWrite;

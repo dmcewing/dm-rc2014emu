@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,6 +32,14 @@ namespace RC2014.EMU.Module
         public void SetData(ushort port, byte value)
         {
             Debug.WriteLine("Set to 0x{0:X2}: {1:X2}", port, value);
+        }
+
+        public void SaveState(IFormatter formatter, Stream saveStream)
+        {
+        }
+
+        public void LoadState(IFormatter formatter, Stream loadStream)
+        {
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,7 +28,7 @@ namespace RC2014VM.UI
         private RC2014.EMU.RC2014 rc2014;
         private bool stop = false;
 
-        private Program program;
+        private readonly Program program;
 
         public MonitorWindow()
         {
@@ -49,17 +50,18 @@ namespace RC2014VM.UI
         public void SetVM(RC2014.EMU.RC2014 vm)
         {
             rc2014 = vm;
-            stkCPU.Dispatcher.Invoke(() => {
+            stkCPU.Dispatcher.Invoke(() =>
+            {
                 stkCPU.DataContext = vm.CPU;
             });
-            
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            ConfigurationEnum config;
-            if (Enum.TryParse((string)cboCofiguration.SelectedItem, out config))
-                program.ResetVM(MachineConfigurations.GetConfigurations(config));
+            if (Enum.TryParse((string)cboCofiguration.SelectedItem, out ConfigurationEnum config))
+            {
+                program.ResetVM(config);
+            }
         }
 
         private void Step_Click(object sender, RoutedEventArgs e)
@@ -80,7 +82,6 @@ namespace RC2014VM.UI
                 Stop.Content = "Continue";
                 program.Stop();
             }
-            
         }
 
         private void Window_Initialized(object sender, EventArgs e)
@@ -90,7 +91,17 @@ namespace RC2014VM.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            cboCofiguration.SelectedItem = Program.CONFIG.ToString();
+            cboCofiguration.SelectedItem = Program.MachineType.ToString();
+        }
+
+        private void SaveState_Click(object sender, RoutedEventArgs e)
+        {
+            program.SaveState();
+        }
+
+        private void LoadState_Click(object sender, RoutedEventArgs e)
+        {
+            program.LoadState();
         }
     }
 }

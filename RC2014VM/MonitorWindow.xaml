@@ -23,8 +23,8 @@
                 <Button x:Name="Stop" Content="Stop" Margin="10,5" Click="Stop_Click" />
                 <Button x:Name="Step" Content="Step" Margin="10,5" Click="Step_Click"/>
                 <Button x:Name="ResetC" Content="Restart"  Margin="10,5" Click="Reset_Click" />
-                <Button x:Name="LoadState" Content="Load" Margin="10,30,10,5"/>
-                <Button x:Name="SaveState" Content="Save" Margin="10,5"/>
+                <Button x:Name="LoadState" Content="Load" Margin="10,30,10,5" Click="LoadState_Click" />
+                <Button x:Name="SaveState" Content="Save" Margin="10,5" Click="SaveState_Click"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Column="1">

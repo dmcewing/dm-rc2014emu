@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,6 +71,8 @@ namespace RC2014.EMU.Module
 
         public ushort[] HandledPorts => new ushort[] { 0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5A,0x5B,0x5C,0x5D,0x5E,0x5F };
 
+
+
         public byte GetData(ushort port)
         {
             Debug.WriteLine("Get:{0:X2}", port);
@@ -121,6 +125,14 @@ namespace RC2014.EMU.Module
         {
             if (!Stop)
                 _LockedDate = DateTime.Now;
+        }
+
+        public void SaveState(IFormatter formatter, Stream saveStream)
+        {
+        }
+
+        public void LoadState(IFormatter formatter, Stream loadStream)
+        {
         }
     }
 }

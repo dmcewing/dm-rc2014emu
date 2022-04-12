@@ -5,7 +5,10 @@ using RC2014.EMU.Module;
 using RC2014VM.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,44 +30,46 @@ namespace RC2014VM.UI
         private static List<Task> _tasks = new List<Task>();
         public static Program CURRENT = new Program();
 
-        public static ConfigurationEnum CONFIG = ConfigurationEnum.RC2014Pro;
+        public static ConfigurationEnum MachineType = ConfigurationEnum.RC2014Pro;
 
         [STAThread]
         static void Main(string[] args)
         {
-            //Console.TreatControlCAsInput = true;
-            //ConsoleHelper.SetVT100Out();
-
             CURRENT.ResetVM();
 
             Application app = _app = new Application();
             app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            app.Run();
+            _ = app.Run();
 
         }
 
         private static void BuildServiceProvider(IModule[] modules)
         {
             ServiceCollection services = new ServiceCollection();
-            services.AddTransient<IZ80Processor, Z80Processor>();
-            services.AddTransient<RC2014.EMU.RC2014>();
-            
-            services.AddTransient(module => modules);
+            _ = services.AddTransient<IZ80Processor, Z80Processor>()
+                    .AddTransient<RC2014.EMU.RC2014>()
+                    .AddTransient(module => modules);
 
             _serviceProvider = services.BuildServiceProvider();
         }
 
         internal void Step()
         {
-            _VM.CPU.ExecuteNextInstruction();
+            _ = _VM.CPU.ExecuteNextInstruction();
         }
 
         public void ResetVM()
         {
-            ResetVM(MachineConfigurations.GetConfigurations(CONFIG));
+            ResetVM(MachineConfigurations.GetConfigurations(MachineType));
         }
 
-        public void ResetVM(IModule[] configuration)
+        public void ResetVM(ConfigurationEnum machineType)
+        {
+            MachineType = machineType;
+            ResetVM();
+        }
+
+        private void ResetVM(IModule[] configuration)
         {
             Stop();
             CancelThreads();
@@ -73,19 +78,69 @@ namespace RC2014VM.UI
             Start();
         }
 
-        public void Stop() =>
+        public void Stop()
+        {
             _VM?.Stop();
+        }
 
-        public void Start() => 
-            _tasks.Prepend(Task.Factory.StartNew(() => _VM.Start(), _cancellationToken));
+        public void Start()
+        {
+            _ = _tasks.Prepend(Task.Factory.StartNew(() => _VM.Start(), _cancellationToken));
+        }
 
-        public void Resume() =>
-            _tasks.Prepend(Task.Factory.StartNew(() => _VM.Resume(), _cancellationToken));
+        public void Resume()
+        {
+            _ = _tasks.Prepend(Task.Factory.StartNew(() => _VM.Resume(), _cancellationToken));
+        }
 
         public void Restart()
         {
             Console.Clear();
             _VM.Restart();
+        }
+
+        [Serializable]
+        public class StateCheck
+        {
+            public ConfigurationEnum MachineType { get; set; }
+        }
+
+        public void SaveState()
+        {
+            string FileName = "State.bin";
+
+            Stream saveFileStream = File.Create(FileName);
+            BinaryFormatter serializer = new BinaryFormatter();
+            serializer.Serialize(saveFileStream, new StateCheck() { MachineType = MachineType });
+            foreach (IModule module in _VM.Modules)
+            {
+                module.SaveState(serializer, saveFileStream);
+            }
+            saveFileStream.Close();
+        }
+
+        public void LoadState()
+        {
+            string FileName = "State.bin";
+
+            using (Stream openFileStream = File.OpenRead(FileName))
+            {
+                BinaryFormatter deserializer = new BinaryFormatter();
+
+                StateCheck state = deserializer.Deserialize(openFileStream) as StateCheck;
+                if (state.MachineType == MachineType)
+                {
+                    foreach (IModule item in _VM.Modules)
+                    {
+                        item.LoadState(deserializer, openFileStream);
+                    }
+                }
+                else
+                {
+                    _ = MessageBox.Show(string.Format("State is type of {0}, cannot be reinstated to {1}", state.MachineType, MachineType), "Error!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+                openFileStream.Close();
+            }
         }
 
         private static void InitVM()
@@ -96,13 +151,13 @@ namespace RC2014VM.UI
 
             _monitor?.SetVM(vm);
 
-            var console = vm.Ports.First(p => p is IConsoleFeed) as IConsoleFeed;
+            IConsoleFeed console = vm.Ports.First(p => p is IConsoleFeed) as IConsoleFeed;
             console.Initalise();
 
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
 
-            _tasks.Prepend(Task.Factory.StartNew(() => console.KeyboardHandler(_cancellationToken, HandleKey), _cancellationToken));
+            _ = _tasks.Prepend(Task.Factory.StartNew(() => console.KeyboardHandler(_cancellationToken, HandleKey), _cancellationToken));
 
         }
 
@@ -167,10 +222,7 @@ namespace RC2014VM.UI
                 //    handled = true;
                 //    break;
             }
-            
             return handled;
         }
-
-
     }
 }

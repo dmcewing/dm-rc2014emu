@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace RC2014.EMU.Module
     /// 
     /// Once page select registers are configured properly the memory paging can be enabled by setting bit 1 of MPGENA(7Ch) register.
     /// </remarks>
+    [Serializable]
     public class RAM512 : IMemoryBank, IPort
     {
         public const int k16 = 0x4000;  //Constant to represent 16KiB.
@@ -53,6 +55,7 @@ namespace RC2014.EMU.Module
         public bool debugOn { get; set; } = false;
 
         //Internal structure to manage the settings for a BANK of memory.
+        [Serializable]
         internal class BankSetting
         {
             public BankSetting(byte page, int low, int high)
@@ -71,7 +74,7 @@ namespace RC2014.EMU.Module
         /// Pages 0 - 31 are mapped to the Flash ROM: page #0 starts at ROM address 00000h, and page #31 ends at ROM address 7FFFFh.
         /// Pages 32 - 63 are mapped to the SRAM: page #32 starts at RAM address 00000h, and page #63 ends at RAM address 7FFFFh.
         /// </summary>
-        protected internal readonly byte[][] memory = new byte[][]
+        protected internal byte[][] memory = new byte[][]
         {
             new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16],
             new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16], new byte[k16],
@@ -104,10 +107,12 @@ namespace RC2014.EMU.Module
 
         public RAM512(string fileName)
         {
-            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
-                for(int i=0;i<=31;i++)
-                    fs.Read(memory[i], 0, k16);
+                for (int i = 0; i <= 31; i++)
+                {
+                    _ = fs.Read(memory[i], 0, k16);
+                }
             }
         }
 
@@ -118,7 +123,9 @@ namespace RC2014.EMU.Module
         public void Reset()
         {
             for (int i = 0; i < 4; i++)
+            {
                 bankSettings[i].SelectedPage = 0;
+            }
         }
 
        
@@ -128,10 +135,10 @@ namespace RC2014.EMU.Module
             {
                 case MPGENA:
                     return pageEnable ? (byte)1 : (byte)0;
-                    
+
                 case MPGSEL_0:
                     return bankSettings[0].SelectedPage;
-                    
+
                 case MPGSEL_1:
                     return bankSettings[1].SelectedPage; 
 
@@ -201,13 +208,11 @@ namespace RC2014.EMU.Module
 
         private byte[] GetContents(BankSetting bank, int startAddress, int length)
         {
-            var overhang = startAddress + length - 1 - bank.HIGH;
+            int overhang = startAddress + length - 1 - bank.HIGH;
 
-            byte[] memSegment;
-            if (overhang > 0)
-                memSegment = new byte[length - overhang];
-            else
-                memSegment = new byte[length];
+            byte[] memSegment = overhang > 0
+                                    ? (new byte[length - overhang])
+                                    : (new byte[length]);
 
             Array.Copy(memory[bank.SelectedPage], startAddress - bank.LOW, memSegment, 0, memSegment.Length);
             return memSegment;
@@ -218,32 +223,39 @@ namespace RC2014.EMU.Module
             if (debugOn)
                 Debug.Assert(startAddress >= LOW_ADDRESS && startAddress <= HI_ADDRESS);
             if (!length.HasValue)
+            {
                 length = contents.Length - startIndex;
+            }
 
             BankSetting bank = bankSettings.FirstOrDefault(m => m.LOW <= startAddress && startAddress <= m.HIGH);
             if (bank == null)
-                return;
-
-            SetContents(bank, startAddress, contents, startIndex, length);
-           
-            var overflow = (startAddress + length.Value) - bank.HIGH - 1;
-            if (overflow > 0)
             {
-                var spaceInBank = bank.HIGH - startAddress + 1;
-                SetContents(bank.HIGH + 1, contents, startIndex + spaceInBank, overflow);
+                return;
             }
 
+            SetContents(bank, startAddress, contents, startIndex, length);
+
+            int overflow = (startAddress + length.Value) - bank.HIGH - 1;
+            if (overflow > 0)
+            {
+                int spaceInBank = bank.HIGH - startAddress + 1;
+                SetContents(bank.HIGH + 1, contents, startIndex + spaceInBank, overflow);
+            }
         }
 
         private void SetContents(BankSetting bank, int startAddress, byte[] contents, int startIndex, int? length)
         {
             if (bank.SelectedPage <= 31)
+            {
                 return;
+            }
 
             if (length.HasValue)
             {
                 if (bank.HIGH - startAddress + 1 < length)
+                {
                     length -= startAddress + length.Value - bank.HIGH;
+                }
             }
             else
             {
@@ -253,13 +265,21 @@ namespace RC2014.EMU.Module
             Array.Copy(contents, startIndex, memory[bank.SelectedPage], startAddress - bank.LOW, length.Value);
         }
 
+        public void SaveState(IFormatter formatter, Stream saveStream)
+        {
+            formatter.Serialize(saveStream, this);
+        }
+
+        public void LoadState(IFormatter formatter, Stream loadStream)
+        {
+            RAM512 o = formatter.Deserialize(loadStream) as RAM512;
+            memory = o.memory;
+            bankSettings = o.bankSettings;
+            pageEnable = o.pageEnable;
+        }
         public MemoryAccessMode MemoryAccessMode => MemoryAccessMode.ReadAndWrite;
-
         public int LOW_ADDRESS => 0x0000;
-
         public int HI_ADDRESS => 0xFFFF;
-
         public int SIZE => HI_ADDRESS - LOW_ADDRESS + 1;
-
     }
 }

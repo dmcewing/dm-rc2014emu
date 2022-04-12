@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -155,7 +156,9 @@ namespace RC2014.EMU.Module
         private void DebugWriteLine(ushort port, DebugLevel level, string message, params object[] args)
         {
             if ((debugLevel & level) == 0)
+            {
                 return;
+            }
 
             if (
                 ((debugLevel & DebugLevel.OutputAD) > 0 && port == CHA_Data)
@@ -178,13 +181,21 @@ namespace RC2014.EMU.Module
             {
                 if (Console.KeyAvailable)
                 {
-                    var k = Console.ReadKey(true);
+                    ConsoleKeyInfo k = Console.ReadKey(true);
                     if (!keyPressHandler(k))
                     {
                         Write(k.KeyChar);
                     }
                 }
             } while (!cancellationToken.IsCancellationRequested);
+        }
+
+        public void SaveState(IFormatter formatter, Stream saveStream)
+        {
+        }
+
+        public void LoadState(IFormatter formatter, Stream loadStream)
+        {
         }
 
         private bool controlLoadSecondByte = false;

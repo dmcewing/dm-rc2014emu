@@ -15,7 +15,8 @@ namespace RC2014VM.UI
         RC2014PlusMonitor,
         RC2014Plus88,
         RC2014Pro,
-        RC2014ProBqrtc
+        RC2014ProBqrtc,
+        RC2014ProCF
     }
 
     public static class MachineConfigurations
@@ -64,13 +65,24 @@ namespace RC2014VM.UI
                             //new PortMonitor()
                         };
 
+                case ConfigurationEnum.RC2014ProCF:
+                    var ram64 = new RAM64(0x0000, 0xFFFF);
+                    
+                    return new IModule[]
+                        {
+                            new PageableROM("ROMS/24886009.ROM", 4, 0x1FFF, ram64),
+                            new SIO() { debugLevel = SIO.DebugLevel.None },
+                            new DSRTC(),
+                            new PortMonitor()
+                        };
+
                 case ConfigurationEnum.RC2014Pro:
                 default:
                     return new IModule[]
                         {
                             new RAM512("ROMS/RCZ80_std.rom"),
                             new SIO() { debugLevel = SIO.DebugLevel.None },
-                            new DSRTC()
+                            new DSRTC(),
                             //new PortMonitor()
                         };
             }

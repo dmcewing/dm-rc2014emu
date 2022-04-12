@@ -33,8 +33,8 @@ namespace RC2014.EMU
             }
         }
 
-        public byte this[int address] 
-        { 
+        public byte this[int address]
+        {
             get => GetContents(address, 1)[0];
             set
             {
@@ -43,7 +43,7 @@ namespace RC2014.EMU
             }
         }
 
-        public int Size => MAX_MEMORY+1;
+        public int Size => MAX_MEMORY + 1;
 
         public byte[] GetContents(int startAddress, int length)
         {
@@ -51,13 +51,15 @@ namespace RC2014.EMU
 
             IMemoryBank bank = MemoryBanks.FirstOrDefault(m => m.LOW_ADDRESS <= startAddress && startAddress <= m.HI_ADDRESS);
             if (bank == null)
+            {
                 return new byte[1] { 0 };
+            }
 
             byte[] segment1 = bank?.GetContents(startAddress, length);
 
-            if (startAddress + length -1 > bank.HI_ADDRESS)
+            if (startAddress + length - 1 > bank.HI_ADDRESS)
             {
-                memorySegment = new byte[length];    
+                memorySegment = new byte[length];
                 Array.Copy(segment1, 0, memorySegment, 0, segment1.Length);
 
                 byte[] segment2 = GetContents(bank.HI_ADDRESS + 1, length - segment1.Length);
@@ -74,18 +76,22 @@ namespace RC2014.EMU
         public void SetContents(int startAddress, byte[] contents, int startIndex = 0, int? length = null)
         {
             if (!length.HasValue)
+            {
                 length = contents.Length - startIndex;
+            }
 
             IMemoryBank bank = MemoryBanks.FirstOrDefault(m => m.LOW_ADDRESS <= startAddress && startAddress <= m.HI_ADDRESS);
             if (bank == null)
+            {
                 return;
+            }
 
             bank.SetContents(startAddress, contents, startIndex, length);
 
-            var overflow = (startAddress + length.Value) - bank.HI_ADDRESS-1;
+            int overflow = startAddress + length.Value - bank.HI_ADDRESS - 1;
             if (overflow > 0)
             {
-                var spaceInBank = bank.HI_ADDRESS - startAddress+1;
+                int spaceInBank = bank.HI_ADDRESS - startAddress + 1;
                 SetContents(bank.HI_ADDRESS + 1, contents, startIndex + spaceInBank, overflow);
             }
         }

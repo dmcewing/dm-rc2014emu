@@ -2,19 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RC2014.EMU.Module
 {
+    [Serializable]
     public abstract class MemoryBank : IMemoryBank
     {
-        public int LOW_ADDRESS { get; private set; }
+        public int LOW_ADDRESS { get; protected set; }
 
-        public int HI_ADDRESS { get; private set; }
-        
-        public int SIZE { get; private set; }
+        public int HI_ADDRESS { get; protected set; }
+
+        public int SIZE { get; protected set; }
 
         public abstract MemoryAccessMode MemoryAccessMode { get; } // => MemoryAccessMode.NotConnected;
 
@@ -29,43 +32,59 @@ namespace RC2014.EMU.Module
             memory = new byte[SIZE];
         }
 
-        public byte[] GetContents(int startAddress, int length)
+        public virtual byte[] GetContents(int startAddress, int length)
         {
             Debug.Assert(startAddress >= LOW_ADDRESS && startAddress <= HI_ADDRESS);
 
-            var overhang = startAddress + length -1 - HI_ADDRESS;
+            int overhang = startAddress + length - 1 - HI_ADDRESS;
 
-            byte[] memSegment;
-            if (overhang > 0)
-                memSegment = new byte[length - overhang];
-            else
-                memSegment = new byte[length];
-
+            byte[] memSegment = overhang > 0
+                                ? (new byte[length - overhang])
+                                : (new byte[length]);
             Array.Copy(memory, startAddress - LOW_ADDRESS, memSegment, 0, memSegment.Length);
             return memSegment;
         }
 
-        public void SetContents(int startAddress, byte[] contents, int startIndex = 0, int? length = null)
+        public virtual void SetContents(int startAddress, byte[] contents, int startIndex = 0, int? length = null)
         {
             Debug.Assert(startAddress >= LOW_ADDRESS && startAddress <= HI_ADDRESS);
 
             if (MemoryAccessMode == MemoryAccessMode.ReadOnly)
+            {
                 return;
+            }
 
             if (length.HasValue)
             {
-                if (HI_ADDRESS - startAddress +1 < length)
+                if (HI_ADDRESS - startAddress + 1 < length)
+                {
                     length -= startAddress + length.Value - HI_ADDRESS;
+                }
             }
             else
             {
                 length = contents.Length - startIndex;
             }
-            
             Array.Copy(contents, startIndex, memory, startAddress - LOW_ADDRESS, length.Value);
-
         }
 
         public virtual void Reset() { }
+
+        public virtual void SaveState(IFormatter formatter, Stream saveStream)
+        {
+            formatter.Serialize(saveStream, this);
+        }
+
+        public virtual void LoadState(IFormatter formatter, Stream loadStream)
+        {
+            MemoryBank o = formatter.Deserialize(loadStream) as MemoryBank;
+            LOW_ADDRESS = o.LOW_ADDRESS;
+            HI_ADDRESS = o.HI_ADDRESS;
+            SIZE = o.SIZE;
+            for (int i = 0; i < memory.Length; i++)
+            {
+                memory[i] = o.memory[i];
+            }
+        }
     }
 }
