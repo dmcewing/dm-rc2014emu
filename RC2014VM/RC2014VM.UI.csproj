@@ -133,12 +133,6 @@
     </None>
     <None Include="ROMS\Readme.md" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RC2014.EMU\RC2014.EMU.csproj">
-      <Project>{090451ce-bd31-40a1-9a59-44b4ac9d6a8c}</Project>
-      <Name>RC2014.EMU</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

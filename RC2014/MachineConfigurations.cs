@@ -1,12 +1,12 @@
-﻿using RC2014.EMU;
-using RC2014.EMU.Module;
+﻿using RC2014.Core;
+using RC2014.Core.Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RC2014VM.UI
+namespace RC2014
 {
     public enum ConfigurationEnum
     {
@@ -28,31 +28,31 @@ namespace RC2014VM.UI
                 case ConfigurationEnum.RC2014Plus32k:
                     return new IModule[]
                         {
-                            new RAM32(),
                             new PageableROM("ROMS/24886009.ROM",0),
-                            new SIO() { debugLevel = SIO.DebugLevel.None }
+                            new RAM32(), //0x8000
+                            new SIO() { debugLevel = SIO.DebugLevel.None}
                         };
 
                 case ConfigurationEnum.RC2014Plus64k:
                     return new IModule[]
                         {
-                            new RAM64(0x2000, 0xFFFF),
-                            new PageableROM("ROMS/24886009.ROM",1,0x1FFF),
+                            new PageableROM("ROMS/24886009.ROM",1,0x2000),
+                            new RAM64(0x2000),
                             new SIO() { debugLevel = SIO.DebugLevel.None }
                         };
 
                 case ConfigurationEnum.RC2014PlusMonitor:
                     return new IModule[]
                         {
-                            new RAM64(0x2000, 0xFFFF),
-                            new PageableROM("ROMS/24886009.ROM",7,0x1FFF),
+                            new PageableROM("ROMS/24886009.ROM",7,0x2000),
+                            new RAM64(0x2000),
                             new SIO() { debugLevel = SIO.DebugLevel.None }
                         };
                 case ConfigurationEnum.RC2014Plus88:
                     return new IModule[]
                         {
-                            new RAM64(0x4000, 0xFFFF),
-                            new PageableROM("ROMS/24886009.ROM",2,0x3FFF),
+                            new PageableROM("ROMS/24886009.ROM",2,0x4000),
+                            new RAM64(0x4000),
                             new SIO() { debugLevel = SIO.DebugLevel.None }
                         };
 
@@ -66,11 +66,9 @@ namespace RC2014VM.UI
                         };
 
                 case ConfigurationEnum.RC2014ProCF:
-                    var ram64 = new RAM64(0x0000, 0xFFFF);
-                    
                     return new IModule[]
                         {
-                            new PageableROM("ROMS/24886009.ROM", 4, 0x1FFF, ram64),
+                            new PageableROM("ROMS/24886009.ROM", 4, 0x2000, true),
                             new SIO() { debugLevel = SIO.DebugLevel.None },
                             new DSRTC(),
                             new PortMonitor()
