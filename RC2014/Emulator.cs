@@ -11,8 +11,8 @@ namespace RC2014
     public class Emulator
     {
         private VM _VM;
-        private Task _keyboardHandler;
-
+        private Thread _keyboardHandler;
+        
         public Emulator(IModule[] modules)
         {
             InitVM(modules);
@@ -26,19 +26,26 @@ namespace RC2014
             
             IConsoleFeed console = _VM.Ports.First(p => p is IConsoleFeed) as IConsoleFeed;
             console.Initalise();
-            
-            _keyboardHandler = new Task(() => { console.KeyboardHandler(HandleKey); });
+
+            _keyboardHandler = new Thread(() => { console.KeyboardHandler(HandleKey); })
+            {
+                IsBackground = true
+            };
             _keyboardHandler.Start();
 
             _VM.Start();
         }
 
+        public bool IsRunning()
+        {
+            return _VM.CPU.State == Zem80.Core.ProcessorState.Running;
+        }
+
         private void ResetVM()
         {
-            Stop();
             CancelThreads();
             InitVM(_VM.Modules);
-//            Start();
+
         }
 
         public void RunUntilStopped()
@@ -109,9 +116,17 @@ namespace RC2014
             switch (k.Key)
             {
                 case ConsoleKey.F12:
-                    ResetVM();
+                    if (ConsoleModifiers.Shift == (ConsoleModifiers.Shift & k.Modifiers))
+                        Stop();
+                    else
+                        ResetVM();
                     handled = true;
                     break;
+
+                //case ConsoleKey.F11:
+                //    Stop();
+                //    handled = true;
+                //    break;
 
                     //case ConsoleKey.F6:
                     //    if (_monitor == null)

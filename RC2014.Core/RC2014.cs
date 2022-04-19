@@ -48,33 +48,25 @@ namespace RC2014.Core
 
             CPU = new Z80(map: map, frequencyInMHz: 7.1f);
             CPU.AfterExecute += CPU_AfterExecute;
-            CPU.OnClockTick += CPU_OnClockTick;
             //CPU.AfterExecute += DebugOutput_AfterExecute;
 
             foreach(var isource in InteruptSources)
-            {
                 isource.InterruptPulse += OnInterruptPulse;
-            }
 
             // We'll connect all ports to the same handlers, which will then work out which device is being addressed and function accordingly.
-            for (byte i = 0; i < 255; i++)
+            foreach(var handlePort in Ports.SelectMany(p => p.HandledPorts))
             {
-                CPU.Ports[i].Connect(ReadPort, WritePort, SignalPortRead, SignalPortWrite);
+                CPU.Ports[(byte)handlePort].Connect(ReadPort, WritePort, SignalPortRead, SignalPortWrite);
             }
 
-            //CPU.SetInterruptMode(InterruptMode.IM2);
             CPU.Init(0, false, TimingMode.PseudoRealTime);
             CPU.EnableInterrupts();
         }
 
         private void OnInterruptPulse(object? sender, EventArgs e)
         {
-            CPU.RaiseInterrupt();
-        }
-
-        private void CPU_OnClockTick(object? sender, Zem80.Core.Instructions.InstructionPackage e)
-        {
-            
+            if (CPU.InterruptsEnabled)
+                CPU.RaiseInterrupt();
         }
 
         private void SignalPortWrite()
@@ -92,21 +84,16 @@ namespace RC2014.Core
             ushort portAddress = CPU.IO.ADDRESS_BUS.LowByte();
 
             var port = Ports.FirstOrDefault(p => p.HandledPorts.Contains(portAddress), null);
-            if (port != null)
-                port.SetData(portAddress, data);
+            port?.SetData(portAddress, data);
         }
 
         private byte ReadPort()
         {
             ushort portAddress = CPU.IO.ADDRESS_BUS.LowByte();
-            byte result = 0x0;
 
             var port = Ports.FirstOrDefault(p => p.HandledPorts.Contains(portAddress), null);
-            if (port != null)
-            {
-                return port.GetData(portAddress);
-            }
-            return result;
+            return port?.GetData(portAddress) ?? 0x0;
+
         }
 
         private void CPU_AfterExecute(object? sender, ExecutionResult e)
@@ -170,10 +157,7 @@ namespace RC2014.Core
 
         public void Restart()
         {
-            _stopRequested = true;
-            CPU.ResetAndClearMemory();
-            CPU.Registers.PC = 0x0;
-            Start();
+            CPU.ResetAndClearMemory(restartAfterReset: true);
         }
 
         public void Stop()
