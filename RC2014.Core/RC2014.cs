@@ -51,6 +51,11 @@ namespace RC2014.Core
             CPU.OnClockTick += CPU_OnClockTick;
             //CPU.AfterExecute += DebugOutput_AfterExecute;
 
+            foreach(var isource in InteruptSources)
+            {
+                isource.InterruptPulse += OnInterruptPulse;
+            }
+
             // We'll connect all ports to the same handlers, which will then work out which device is being addressed and function accordingly.
             for (byte i = 0; i < 255; i++)
             {
@@ -62,12 +67,14 @@ namespace RC2014.Core
             CPU.EnableInterrupts();
         }
 
+        private void OnInterruptPulse(object? sender, EventArgs e)
+        {
+            CPU.RaiseInterrupt();
+        }
+
         private void CPU_OnClockTick(object? sender, Zem80.Core.Instructions.InstructionPackage e)
         {
-            if (InteruptSources.Any(i => i.IntLineIsActive))
-            {
-                CPU.RaiseInterrupt();
-            }
+            
         }
 
         private void SignalPortWrite()

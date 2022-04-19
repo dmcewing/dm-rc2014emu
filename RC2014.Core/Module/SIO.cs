@@ -62,15 +62,13 @@ namespace RC2014.Core.Module
             CHA_Control, CHA_Data, CHB_Control, CHB_Data
         };
 
-        public bool IntLineIsActive => InBytes.Count > 0;
-        public byte? ValueOnDataBus => 0;
-
         public void Write(byte value)
         {
             if ((debugLevel & DebugLevel.Input) > 0)
                 Debug.WriteLine("{0:X2} Written to SIO", value);
 
             InBytes.Add(value);
+            InterruptPulse?.Invoke(this, new EventArgs());
         }
         public void Write(string value)
         {
@@ -194,6 +192,7 @@ namespace RC2014.Core.Module
         private int writeToRegister = 0;
         private readonly byte[] registers = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
 
+        public event EventHandler InterruptPulse;
     }
 
 }

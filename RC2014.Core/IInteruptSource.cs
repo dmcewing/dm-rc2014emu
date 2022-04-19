@@ -1,12 +1,13 @@
 ﻿namespace RC2014.Core
 {
+
     public interface INonMaskableInteruptSource
     {
+        event EventHandler NmiInterruptPulse;
     }
 
     public interface IInterruptSource
     {
-        bool IntLineIsActive { get; }
-        byte? ValueOnDataBus { get; }
+        public event EventHandler InterruptPulse;
     }
 }
