@@ -17,10 +17,14 @@ namespace RC2014.Core
         public readonly IPort[] Ports; // { get; private set; }
         public readonly IModule[] Modules;
         public readonly IInterruptSource[] InteruptSources;
-        
+        public readonly IConsoleFeed? ConsoleFeed;
+
+        private Func<ConsoleKeyInfo, bool> HandleKey;
+        private Func<bool> IsStopping;
+
         private bool _stopRequested = false;
 
-        public RC2014(IModule[] modules)
+        public RC2014(IModule[] modules, Func<ConsoleKeyInfo, bool> handleKey, Func<bool> isStopping)
         {
             Modules = modules;
 
@@ -36,6 +40,12 @@ namespace RC2014.Core
                                     where m is IInterruptSource
                                     select m as IInterruptSource).ToArray();
 
+            ConsoleFeed = (from m in modules
+                       where m is IConsoleFeed
+                       select m as IConsoleFeed).FirstOrDefault();
+
+            HandleKey = handleKey;
+            IsStopping = isStopping;
 
             // set up the memory map - 16K ROM + 48K RAM = 64K
             IMemoryMap map = new MemoryMap(0x10000, false);
@@ -146,6 +156,7 @@ namespace RC2014.Core
         public void Start()
         {
             _stopRequested = false;
+            ConsoleFeed?.Initalise(HandleKey, IsStopping);
             CPU.Start();
         }
 

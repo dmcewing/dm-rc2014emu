@@ -163,10 +163,10 @@ namespace RC2014.Core.Module
         {
             byte[] memorySegment;
 
-            BankSetting bank = bankSettings.FirstOrDefault(m => m.LOW <= startAddress && startAddress <= m.HIGH);
+            BankSetting? bank = bankSettings.FirstOrDefault(m => m.LOW <= startAddress && startAddress <= m.HIGH);
             if (bank == null)
                 return new byte[1] { 0 };
-
+            
             byte[] segment1 = GetContents(bank, startAddress, length);
 
             if (startAddress + length - 1 > bank.HIGH)
@@ -209,9 +209,7 @@ namespace RC2014.Core.Module
 
             BankSetting bank = bankSettings.FirstOrDefault(m => m.LOW <= startAddress && startAddress <= m.HIGH);
             if (bank == null)
-            {
                 return;
-            }
 
             SetContents(bank, startAddress, contents, startIndex, length);
 

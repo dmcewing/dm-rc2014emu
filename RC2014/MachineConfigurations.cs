@@ -71,7 +71,7 @@ namespace RC2014
                             new PageableROM("ROMS/24886009.ROM", 4, 0x2000, true),
                             new SIO() { debugLevel = SIO.DebugLevel.None },
                             new DSRTC(),
-                            new PortMonitor()
+                            //new PortMonitor()
                         };
 
                 case ConfigurationEnum.RC2014Pro:

@@ -8,17 +8,13 @@ using System.Threading.Tasks;
 
 namespace RC2014.Core
 {
-    public delegate bool KeyPressHandler(ConsoleKeyInfo keyInfo);
-
     public interface IConsoleFeed
     {
-        void Initalise();
+        void Initalise(Func<ConsoleKeyInfo, bool> handleKey, Func<bool> isStopping);
 
         void Write(byte value);
         void Write(string value);
         void Write(char value);
 
-        void KeyboardHandler(KeyPressHandler keyPressHandler);
-        void Reset();
     }
 }

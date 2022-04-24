@@ -44,18 +44,22 @@ namespace RC2014.Core.Module
         
         private TextWriter? Output;
         private readonly Collection<byte> InBytes;
+        private Thread KeyboardHandlerThread;
 
         public DebugLevel debugLevel { get; set; } = DebugLevel.None;
 
-        public SIO() => InBytes = new Collection<byte>();
+        public SIO()
+        {
+            InBytes = new Collection<byte>();
+        }
 
-        public void Initalise()
+        public void Initalise(Func<ConsoleKeyInfo, bool> handleKey, Func<bool> isStopping)
         {
             Console.TreatControlCAsInput = true;
             Output = Console.Out;
+            Console.Clear();
+            InitKeyboardThread(handleKey, isStopping);
         }
-
-        public void Reset() => Output = null;
 
         public ushort[] HandledPorts => new ushort[]
         {
@@ -164,7 +168,19 @@ namespace RC2014.Core.Module
 
         }
 
-        public void KeyboardHandler(KeyPressHandler keyPressHandler)
+        public void InitKeyboardThread(Func<ConsoleKeyInfo, bool> handleKey, Func<bool> isStopping)
+        {
+            if (KeyboardHandlerThread?.IsAlive ?? false)
+                return;
+
+            var keyboardThread = KeyboardHandlerThread = new Thread(() => { KeyboardHandler(handleKey, isStopping); })
+            {
+                IsBackground = true
+            };
+            keyboardThread.Start();
+        }
+
+        private void KeyboardHandler(Func<ConsoleKeyInfo, bool> keyPressHandler, Func<bool> isStopping)
         {
             do
             {
@@ -177,7 +193,7 @@ namespace RC2014.Core.Module
                     }
                 }
                 Thread.Yield();
-            } while (true);
+            } while (!isStopping());
         }
 
         public void SaveState(IFormatter formatter, Stream saveStream)

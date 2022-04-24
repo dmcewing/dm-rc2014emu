@@ -11,30 +11,31 @@ namespace RC2014
     public class Emulator
     {
         private VM _VM;
-        private Thread _keyboardHandler;
+        private bool _stopping = false;
         
-        public Emulator(IModule[] modules)
+        private readonly ConfigurationEnum machineType;
+
+        public Emulator(ConfigurationEnum config)
         {
-            InitVM(modules);
+            machineType = config;
+            InitVM();
+        }
+
+        public void InitVM()
+        {
+            InitVM(MachineConfigurations.GetConfigurations(machineType));
         }
 
         public void InitVM(IModule[] modules)
         {
             CancelThreads();
 
-            _VM = new VM(modules);
-            
-            IConsoleFeed console = _VM.Ports.First(p => p is IConsoleFeed) as IConsoleFeed;
-            console.Initalise();
-
-            _keyboardHandler = new Thread(() => { console.KeyboardHandler(HandleKey); })
-            {
-                IsBackground = true
-            };
-            _keyboardHandler.Start();
-
+            _stopping = false;
+            _VM = new VM(modules, HandleKey, IsStopping);
             _VM.Start();
         }
+
+        public bool IsStopping() => _stopping;
 
         public bool IsRunning()
         {
@@ -44,8 +45,7 @@ namespace RC2014
         private void ResetVM()
         {
             CancelThreads();
-            InitVM(_VM.Modules);
-
+            InitVM();
         }
 
         public void RunUntilStopped()
@@ -61,6 +61,7 @@ namespace RC2014
 
         public void Stop()
         {
+            _stopping = true;
             _VM.Stop();
         }
 
@@ -106,7 +107,7 @@ namespace RC2014
         private void CancelThreads()
         {
             _VM?.Stop();
-            (_VM?.Ports.First(p => p is IConsoleFeed) as IConsoleFeed)?.Reset();
+            //(_VM?.Ports.First(p => p is IConsoleFeed) as IConsoleFeed)?.Reset();
         }
 
         private bool HandleKey(ConsoleKeyInfo k)
