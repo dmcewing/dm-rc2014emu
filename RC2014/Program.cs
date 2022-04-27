@@ -1,14 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using RC2014;
-var emulator = new Emulator(ConfigurationEnum.RC2014Pro);
+var emulator = new Emulator(ConfigurationEnum.RC2014ProCF);
 do
 {
-    do
-    {
-        Thread.Yield();
-    } while (emulator.IsRunning());
-
-    //Pause for a bit... then check the running state again.  It might have been in the middle of a reset.
-    Thread.Sleep(250);
-
-} while (emulator.IsRunning());
+    Thread.Yield();
+} while (!emulator.IsStopping());

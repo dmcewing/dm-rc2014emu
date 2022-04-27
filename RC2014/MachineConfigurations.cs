@@ -68,9 +68,10 @@ namespace RC2014
                 case ConfigurationEnum.RC2014ProCF:
                     return new IModule[]
                         {
-                            new PageableROM("ROMS/24886009.ROM", 4, 0x2000, true),
+                            new RAM512("ROMS/RCZ80_std.rom"),
                             new SIO() { debugLevel = SIO.DebugLevel.None },
                             new DSRTC(),
+                            new CF()
                             //new PortMonitor()
                         };
 

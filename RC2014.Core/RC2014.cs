@@ -69,7 +69,7 @@ namespace RC2014.Core
                 CPU.Ports[(byte)handlePort].Connect(ReadPort, WritePort, SignalPortRead, SignalPortWrite);
             }
 
-            CPU.Init(0, false, TimingMode.PseudoRealTime);
+            CPU.Initialise(0, false, TimingMode.PseudoRealTime);
             CPU.EnableInterrupts();
         }
 
