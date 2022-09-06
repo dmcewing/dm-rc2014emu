@@ -2,7 +2,7 @@
 
 To build a disk image using EtchedPixels RC2014 emulator
 
-    #  ./makedisk 1 my.cf
+    #  ./makedisk 5 my.cf
     #  dd if=cf-image of=my.cf bs=512 seek=2 conv=notrunc
 
 In other words the IDE disk format has a 1K header that holds

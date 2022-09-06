@@ -22,6 +22,9 @@
     <None Update="DISKIMGS\CPMImage.cf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="DISKIMGS\my.cf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ROMS\24886009.rom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
