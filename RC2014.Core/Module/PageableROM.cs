@@ -13,7 +13,7 @@ namespace RC2014.Core.Module
     {
         private bool isEnabled = true;
 
-        private MemorySegment RAM;
+        private DMMemorySegment RAM;
         private IMemorySegment ROM;
 
         private IMemorySegment ACTIVE_MEMORY => (isEnabled) ? ROM : RAM;
@@ -31,7 +31,7 @@ namespace RC2014.Core.Module
 
             if (enableRAM)
             {
-                RAM = new MemorySegment(ROM.SizeInBytes);
+                RAM = new DMMemorySegment(ROM.SizeInBytes);
             }
 
             MapAt(startAddress);
@@ -105,7 +105,7 @@ namespace RC2014.Core.Module
         public void Clear()
         {
             if (RAM != null)
-                RAM = new MemorySegment(ROM.SizeInBytes);
+                RAM = new DMMemorySegment(ROM.SizeInBytes);
 
             isEnabled = true;
         }
