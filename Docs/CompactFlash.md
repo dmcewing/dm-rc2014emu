@@ -43,3 +43,22 @@ to be reused between this module and the IDE modules when they are developed.
  | IDE_IO_CMD			| 0x07	| W		| COMMAND REGISTER (EXECUTE)	|
  
  \* LBA0-3 ARE ALTERNATE DEFINITIONS OF SECT, CYL, AND DRVHD PORTS
+
+ ### Supported Commands
+ The following commands have been implemented (from `ATAPIBase`)
+
+| Command | Value | Description |
+|---|---|---|
+| UNKNOWN | 0x00 |
+| CMD_EDD | 0x90 |
+| CMD_IDENTIFY | 0xEC|
+| CMD_INTPARAMS | 0x91|
+| CMD_READ | 0x20|
+| CMD_READ_NR | 0x21 |
+| CMD_SETFEATURES | 0xEF |
+| CMD_VERIFY | 0x40 |
+| CMD_VERIFY_NR | 0x41 |
+| CMD_WRITE | 0x30 | 
+| CMD_WRITE_NR | 0x31 |
+| CMD_CALIB | 0x10 | actually all 0x1? range
+| CMD_SEEK | 0x70 | actually all 0x7? range

@@ -1,4 +1,6 @@
-To build a disk image
+#CF Disk Image
+
+To build a disk image using EtchedPixels RC2014 emulator
 
     #  ./makedisk 1 my.cf
     #  dd if=cf-image of=my.cf bs=512 seek=2 conv=notrunc
