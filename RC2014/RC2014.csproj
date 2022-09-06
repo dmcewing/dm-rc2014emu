@@ -13,6 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DISKIMGS\CPMBaseImage.cf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DISKIMGS\CPMBaseImage2.cf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DISKIMGS\CPMImage.cf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ROMS\24886009.rom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
