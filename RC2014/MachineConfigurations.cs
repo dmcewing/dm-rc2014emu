@@ -71,7 +71,7 @@ namespace RC2014
                             new RAM512("ROMS/RCZ80_std.rom"),
                             new SIO() { debugLevel = SIO.DebugLevel.None },
                             new DSRTC(),
-                            new CF()
+                            new CF("DISKIMGS/CPMImage.cf")
                             //new PortMonitor()
                         };
 

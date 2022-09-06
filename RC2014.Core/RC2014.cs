@@ -110,6 +110,10 @@ namespace RC2014.Core
         {
             if (_stopRequested)
             {
+                foreach (IDrivePort module in Ports.Where(m => m is IDrivePort))
+                {
+                    module.Close();
+                }
                 CPU.Stop();
                 return;
             }

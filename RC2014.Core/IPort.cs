@@ -13,4 +13,9 @@ namespace RC2014.Core
         byte GetData(ushort port);
         void SetData(ushort port, byte value);
     }
+
+    public interface IDrivePort: IPort
+    {
+        void Close();
+    }
 }

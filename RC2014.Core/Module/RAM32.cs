@@ -13,8 +13,13 @@ namespace RC2014.Core.Module
     public class RAM32 : MemoryBank
     {
         public RAM32()
-            :base(0x8000, 0x8000)
+            :base(0x4000, 0x8000)
         {
+        }
+        public RAM32(ushort start)
+            :base(0x4000, start)
+        {
+
         }
     }
 }

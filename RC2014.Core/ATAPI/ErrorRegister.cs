@@ -24,48 +24,41 @@ namespace RC2014.Core.ATAPI
 	///	1	TK0NF:	TRACK 0 NOT FOUND
 	///	0	AMNF:	ADDRESS MARK NOT FOUND
 	/// </remarks>
-	public struct ErrorRegister
-	{
-		public ErrorRegister()
-		{
-
-		}
-		public ErrorRegister(byte value)
-		{
-			BadBlock = (value & 0x80) != 0;
-			UncorrectableData = (value & 0x40) != 0;
-			MediaChanged = (value & 0x20) != 0;
-			IDNotFound = (value & 0x10) != 0;
-			MediaChangeRequested = (value & 0x08) != 0;
-			AbortedCommand = (value & 0x04) != 0;
-			Track0NotFound = (value & 0x02) != 0;
-			AddressMarkNotFound = (value & 0x01) != 0;
-		}
-
-		public byte Value
-		{
-			get
-			{
-				var status = (BadBlock ? 0x80 : 0)
-						+ (UncorrectableData ? 0x40 : 0)
-						+ (MediaChanged ? 0x20 : 0)
-						+ (IDNotFound ? 0x10 : 0)
-						+ (MediaChangeRequested ? 0x08 : 0)
-						+ (AbortedCommand ? 0x04 : 0)
-						+ (Track0NotFound ? 0x02 : 0)
-						+ (AddressMarkNotFound ? 0x01 : 0);
-				return (byte)status;
-			}
-		}
-
-		public bool BadBlock { get; set; } = false;
-		public bool UncorrectableData { get; set; } = false;
-		public bool MediaChanged { get; set; } = false;
-		public bool IDNotFound { get; set; } = false;
-		public bool MediaChangeRequested { get; set; } = false;
-		public bool AbortedCommand { get; set; } = false;
-		public bool Track0NotFound { get; set; } = false;
-		public bool AddressMarkNotFound { get; set; } = false;
-
-	}
+	[Flags]
+    public enum ErrorRegisterEnum
+    {
+		CLEAR = 0,
+		/// <summary>
+		/// Address Mark Not FOund
+		/// </summary>
+		AMNF = 1,
+		/// <summary>
+		/// Track 0 Not Found
+		/// </summary>
+		TKNONF = 2,
+		/// <summary>
+		/// Aborted Command
+		/// </summary>
+		ABRT = 4,
+		/// <summary>
+		/// Media Change Requested
+		/// </summary>
+		MCR = 8,
+		/// <summary>
+		/// ID Not Found
+		/// </summary>
+		IDNF = 16,
+		/// <summary>
+		/// Media Changed
+		/// </summary>
+		MC = 32,
+		/// <summary>
+		/// Uncorrectable Data Error
+		/// </summary>
+		UNC = 64,
+		/// <summary>
+		/// Bad Block Detected
+		/// </summary>
+		BBK = 128
+    }
 }

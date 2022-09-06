@@ -10,4 +10,6 @@
 | [BQRTC](BQRTC.md)             | A BQ4845 RTC emulator                                |
 | [DSRTC](DSRTC.md)             | A DS1302 RTC emulator                                |
 | [PortMonitor](PortMonitor.md) | A module for dumping port access to the Debug window |
+| [Compact Flash](CompactFlash.md)| The Compact Flash Module                            |
+
 

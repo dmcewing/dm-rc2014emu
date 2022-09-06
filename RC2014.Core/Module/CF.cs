@@ -15,6 +15,12 @@ namespace RC2014.Core.Module
         {
         }
 
+        public CF(string fileName): base()
+        {
+            Stream s = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite);
+            this.Attach(0, s);
+        }
+
         protected override ushort BasePort => 0x10;
 
         public override byte GetData(ushort port)

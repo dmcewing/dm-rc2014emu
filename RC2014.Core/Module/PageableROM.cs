@@ -13,7 +13,7 @@ namespace RC2014.Core.Module
     {
         private bool isEnabled = true;
 
-        private IMemorySegment RAM;
+        private MemorySegment RAM;
         private IMemorySegment ROM;
 
         private IMemorySegment ACTIVE_MEMORY => (isEnabled) ? ROM : RAM;
@@ -25,7 +25,7 @@ namespace RC2014.Core.Module
 
         public bool ReadOnly => isEnabled || (!isEnabled && RAM == null);
 
-        public PageableROM(string fileName, short pageSelection = 0, uint size = 0x2000, bool enableRAM = false)
+        public PageableROM(string fileName, short pageSelection = 0, uint size = 0x2000, bool enableRAM = false, ushort startAddress = 0x0000)
         {
             ROM = new ReadOnlyMemorySegment(LoadRom(fileName, pageSelection, size));
 
@@ -34,13 +34,13 @@ namespace RC2014.Core.Module
                 RAM = new MemorySegment(ROM.SizeInBytes);
             }
 
-            MapAt(0x0000);
+            MapAt(startAddress);
         }
 
         private static byte[] LoadRom(string fileName, short pageSelection, uint size)
         {
             byte[] page = new byte[size];
-            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new(fileName, FileMode.Open, FileAccess.Read))
             {
                 for (; pageSelection >= 0; pageSelection--)
                 {
@@ -52,12 +52,12 @@ namespace RC2014.Core.Module
 
         public void SaveState(IFormatter formatter, Stream saveStream)
         {
-            //RAM?.SaveState(formatter, saveStream);
+            RAM?.SaveState(formatter, saveStream);
         }
 
         public void LoadState(IFormatter formatter, Stream loadStream)
         {
-            //RAM?.LoadState(formatter, loadStream);
+            RAM?.LoadState(formatter, loadStream);
         }
 
         public byte GetData(ushort port)
