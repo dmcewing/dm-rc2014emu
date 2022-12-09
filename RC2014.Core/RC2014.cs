@@ -56,8 +56,8 @@ namespace RC2014.Core
             //map.Map(new ReadOnlyMemorySegment(File.ReadAllBytes(romPath)), 0);
             //map.Map(new MemorySegment(49152), 16384);
 
-            CPU = new Z80(map: map, frequencyInMHz: 7.1f);
-            CPU.AfterExecute += CPU_AfterExecute;
+            CPU = new Z80(map: map, frequencyInMHz: 7.1f, cycleWaitPattern: new int[] { 3, 2 });
+            CPU.AfterExecuteInstruction += CPU_AfterExecute;
             //CPU.AfterExecute += DebugOutput_AfterExecute;
 
             foreach(var isource in InteruptSources)

@@ -50,14 +50,14 @@ namespace RC2014.Core.Module
             return page;
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(Stream saveStream)
         {
-            RAM?.SaveState(formatter, saveStream);
+            RAM?.SaveState(saveStream);
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(Stream loadStream)
         {
-            RAM?.LoadState(formatter, loadStream);
+            RAM?.LoadState(loadStream);
         }
 
         public byte GetData(ushort port)

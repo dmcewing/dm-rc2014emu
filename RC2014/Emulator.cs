@@ -82,11 +82,10 @@ namespace RC2014
             string FileName = "State.bin";
 
             Stream saveFileStream = File.Create(FileName);
-            BinaryFormatter serializer = new BinaryFormatter();
             //serializer.Serialize(saveFileStream, new StateCheck() { MachineType = MachineType });
             foreach (IModule module in _VM.Modules)
             {
-                module.SaveState(serializer, saveFileStream);
+                module.SaveState(saveFileStream);
             }
             saveFileStream.Close();
         }
@@ -97,14 +96,12 @@ namespace RC2014
 
             using (Stream openFileStream = File.OpenRead(FileName))
             {
-                BinaryFormatter deserializer = new BinaryFormatter();
-
                 //StateCheck state = deserializer.Deserialize(openFileStream) as StateCheck;
                 //if (state.MachineType == MachineType)
                 //{
                     foreach (IModule item in _VM.Modules)
                     {
-                        item.LoadState(deserializer, openFileStream);
+                        item.LoadState(openFileStream);
                     }
                 //}
                 //else

@@ -67,6 +67,19 @@ namespace RC2014.Core.Module
             public byte SelectedPage { get; set; }
             public int LOW { get; set; }
             public int HIGH { get; set; }
+
+            internal void SaveState(BinaryWriter bw)
+            {
+                bw.Write(SelectedPage);
+                bw.Write(LOW); 
+                bw.Write(HIGH);
+            }
+            internal void LoadState(BinaryReader br)
+            {
+                SelectedPage = br.ReadByte();
+                LOW = br.ReadInt32();
+                HIGH = br.ReadInt32();
+            }
         }
 
         /// <summary>
@@ -243,17 +256,20 @@ namespace RC2014.Core.Module
             Array.Copy(contents, startIndex, memory[bank.SelectedPage], startAddress - bank.LOW, length.Value);
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(Stream saveStream)
         {
-            formatter.Serialize(saveStream, this);
+            BinaryWriter bw = new(saveStream);
+            bankSettings.ToList().ForEach(bankSetting => bankSetting.SaveState(bw));
+            memory.ToList().ForEach(bank => bw.Write(bank));
+            bw.Write(pageEnable);
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(Stream loadStream)
         {
-            RAM512 o = formatter.Deserialize(loadStream) as RAM512;
-            memory = o.memory;
-            bankSettings = o.bankSettings;
-            pageEnable = o.pageEnable;
+            BinaryReader br = new(loadStream);
+            bankSettings.ToList().ForEach(bankSetting => bankSetting.LoadState(br));
+            memory.ToList().ForEach(bank => Array.Copy(br.ReadBytes(k16), bank, k16));
+            pageEnable = br.ReadBoolean();
         }
 
         public byte ReadByteAt(ushort offset)

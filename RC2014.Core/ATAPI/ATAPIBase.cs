@@ -292,11 +292,11 @@ namespace RC2014.Core
 			Drive[1].Ready();
 		}
 
-		public virtual void LoadState(IFormatter formatter, Stream loadStream)
+		public virtual void LoadState(Stream loadStream)
 		{
 		}
 
-		public virtual void SaveState(IFormatter formatter, Stream saveStream)
+		public virtual void SaveState(Stream saveStream)
 		{
 		}
 

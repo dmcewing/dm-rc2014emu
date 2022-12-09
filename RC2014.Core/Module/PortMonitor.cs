@@ -34,11 +34,11 @@ namespace RC2014.Core.Module
             Debug.WriteLine("Set to 0x{0:X2}: {1:X2}", port, value);
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(Stream saveStream)
         {
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(Stream loadStream)
         {
         }
     }

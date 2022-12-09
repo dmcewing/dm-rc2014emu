@@ -196,11 +196,11 @@ namespace RC2014.Core.Module
             } while (!isStopping());
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(Stream saveStream)
         {
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(Stream loadStream)
         {
         }
 
