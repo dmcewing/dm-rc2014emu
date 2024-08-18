@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Zem80.Core;
+using Zem80.Core.CPU;
 using Zem80.Core.Memory;
-using Z80 = Zem80.Core.Processor;
+using Z80 = Zem80.Core.CPU.Processor;
 
 namespace RC2014.Core
 {
@@ -56,8 +57,11 @@ namespace RC2014.Core
             //map.Map(new ReadOnlyMemorySegment(File.ReadAllBytes(romPath)), 0);
             //map.Map(new MemorySegment(49152), 16384);
 
-            CPU = new Z80(map: map, frequencyInMHz: 7.1f);
-            CPU.AfterExecute += CPU_AfterExecute;
+            CPU = new Z80(map: map,  clock: ClockMaker.TimeSlicedClock(
+                    7.5f,
+                    TimeSpan.FromMilliseconds(20)
+                    ));
+            CPU.AfterExecuteInstruction += CPU_AfterExecuteInstruction;
             //CPU.AfterExecute += DebugOutput_AfterExecute;
 
             foreach(var isource in InteruptSources)
@@ -69,24 +73,28 @@ namespace RC2014.Core
                 CPU.Ports[(byte)handlePort].Connect(ReadPort, WritePort, SignalPortRead, SignalPortWrite);
             }
 
-            CPU.Initialise(0, false, TimingMode.PseudoRealTime);
-            CPU.EnableInterrupts();
+            CPU.Interrupts.SetMode(InterruptMode.IM1);
+            CPU.Interrupts.Enable();
+            //CPU.EnableInterrupts();
+            //CPU.Interrupts.SetMode(Zem80.Core.CPU.InterruptMode.IM1);
         }
 
         private void OnInterruptPulse(object? sender, EventArgs e)
         {
-            if (CPU.InterruptsEnabled)
-                CPU.RaiseInterrupt();
+            //if (CPU.Interrupts.Enabled)
+            //{ 
+                CPU.Interrupts.RaiseMaskable();
+            //}
         }
 
         private void SignalPortWrite()
         {
-//            Debug.WriteLine("Databus (W): " + CPU.IO.DATA_BUS);
+            //Debug.WriteLine("Databus (W): " + CPU.IO.DATA_BUS);
         }
 
         private void SignalPortRead()
         {
- //           Debug.WriteLine("Databus (R): " + CPU.IO.DATA_BUS);
+           //Debug.WriteLine("Databus (R): " + CPU.IO.DATA_BUS);
         }
 
         private void WritePort(byte data)
@@ -106,7 +114,7 @@ namespace RC2014.Core
 
         }
 
-        private void CPU_AfterExecute(object? sender, ExecutionResult e)
+        private void CPU_AfterExecuteInstruction(object? sender, Zem80.Core.CPU.ExecutionResult e)
         {
             if (_stopRequested)
             {

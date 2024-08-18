@@ -45,7 +45,7 @@ namespace RC2014
 
         public bool IsRunning()
         {
-            return _VM.CPU.State == Zem80.Core.ProcessorState.Running;
+            return _VM.CPU.Running;
         }
 
         private void ResetVM()
@@ -79,40 +79,40 @@ namespace RC2014
 
         public void SaveState()
         {
-            string FileName = "State.bin";
+            //string FileName = "State.bin";
 
-            Stream saveFileStream = File.Create(FileName);
-            BinaryFormatter serializer = new BinaryFormatter();
-            //serializer.Serialize(saveFileStream, new StateCheck() { MachineType = MachineType });
-            foreach (IModule module in _VM.Modules)
-            {
-                module.SaveState(serializer, saveFileStream);
-            }
-            saveFileStream.Close();
+            //Stream saveFileStream = File.Create(FileName);
+            //BinaryFormatter serializer = new BinaryFormatter();
+            ////serializer.Serialize(saveFileStream, new StateCheck() { MachineType = MachineType });
+            //foreach (IModule module in _VM.Modules)
+            //{
+            //    module.SaveState(serializer, saveFileStream);
+            //}
+            //saveFileStream.Close();
         }
 
         public void LoadState()
         {
-            string FileName = "State.bin";
+            //string FileName = "State.bin";
 
-            using (Stream openFileStream = File.OpenRead(FileName))
-            {
-                BinaryFormatter deserializer = new BinaryFormatter();
+            //using (Stream openFileStream = File.OpenRead(FileName))
+            //{
+            //    BinaryFormatter deserializer = new BinaryFormatter();
 
-                //StateCheck state = deserializer.Deserialize(openFileStream) as StateCheck;
-                //if (state.MachineType == MachineType)
-                //{
-                    foreach (IModule item in _VM.Modules)
-                    {
-                        item.LoadState(deserializer, openFileStream);
-                    }
-                //}
-                //else
-                //{
-                //    _ = MessageBox.Show(string.Format("State is type of {0}, cannot be reinstated to {1}", state.MachineType, MachineType), "Error!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                //}
-                openFileStream.Close();
-            }
+            //    //StateCheck state = deserializer.Deserialize(openFileStream) as StateCheck;
+            //    //if (state.MachineType == MachineType)
+            //    //{
+            //        foreach (IModule item in _VM.Modules)
+            //        {
+            //            item.LoadState(deserializer, openFileStream);
+            //        }
+            //    //}
+            //    //else
+            //    //{
+            //    //    _ = MessageBox.Show(string.Format("State is type of {0}, cannot be reinstated to {1}", state.MachineType, MachineType), "Error!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            //    //}
+            //    openFileStream.Close();
+            //}
         }
 
 

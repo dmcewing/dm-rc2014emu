@@ -267,11 +267,11 @@ namespace RC2014.Core.Module
             return (CE, WE, Clk, INP);
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(ICustomFormatter formatter, Stream saveStream)
         {
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(ICustomFormatter formatter, Stream loadStream)
         {
         }
     }

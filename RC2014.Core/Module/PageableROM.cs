@@ -50,12 +50,12 @@ namespace RC2014.Core.Module
             return page;
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(ICustomFormatter formatter, Stream saveStream)
         {
             RAM?.SaveState(formatter, saveStream);
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(ICustomFormatter formatter, Stream loadStream)
         {
             RAM?.LoadState(formatter, loadStream);
         }
@@ -76,10 +76,10 @@ namespace RC2014.Core.Module
             return ACTIVE_MEMORY.ReadByteAt(offset);
         }
 
-        public byte[] ReadBytesAt(ushort offset, int bytes)
-        {
-            return ACTIVE_MEMORY.ReadBytesAt(offset, bytes);
-        }
+        //public byte[] ReadBytesAt(ushort offset, int bytes)
+        //{
+        //    return ACTIVE_MEMORY.ReadBytesAt(offset, bytes);
+        //}
         public void WriteByteAt(ushort offset, byte value)
         {
             if (ReadOnly)
@@ -88,13 +88,13 @@ namespace RC2014.Core.Module
             RAM.WriteByteAt(offset, value);
         }
 
-        public void WriteBytesAt(ushort offset, byte[] bytes)
-        {
-            if (ReadOnly)
-                return;
+        //public void WriteBytesAt(ushort offset, byte[] bytes)
+        //{
+        //    if (ReadOnly)
+        //        return;
 
-            RAM.WriteBytesAt(offset, bytes);
-        }
+        //    RAM.WriteBytesAt(offset, bytes);
+        //}
 
         public void MapAt(ushort address)
         {

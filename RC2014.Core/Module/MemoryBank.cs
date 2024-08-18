@@ -66,15 +66,15 @@ namespace RC2014.Core.Module
             _memory = new byte[SizeInBytes];
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(ICustomFormatter formatter, Stream loadStream)
         {
-            DMMemorySegment o = formatter.Deserialize(loadStream) as DMMemorySegment;
-            _memory = o._memory;
+            //DMMemorySegment o = formatter.Deserialize(loadStream) as DMMemorySegment;
+            //_memory = o._memory;
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(ICustomFormatter formatter, Stream saveStream)
         {
-            formatter.Serialize(saveStream, this);
+            //formatter.Serialize(saveStream, this);
         }
 
         public DMMemorySegment(uint sizeInBytes)

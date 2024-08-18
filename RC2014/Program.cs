@@ -10,7 +10,7 @@ if (File.Exists("State.bin"))
         || response.ToLowerInvariant().Contains("y"))
         loadState = true;
 }
-var emulator = new Emulator(ConfigurationEnum.RC2014ProCF, loadState);
+var emulator = new Emulator(ConfigurationEnum.RC2014Pro, loadState);
 do
 {
     Thread.Yield();

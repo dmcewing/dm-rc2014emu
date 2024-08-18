@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC2014.Core", "RC2014.Core\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC2014", "RC2014\RC2014.csproj", "{6F7BA578-436C-4CD9-8C6C-7CB1EA8E3B42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zem80_Core", "..\neilhewitt-Zem80\src\Zem80_Core\Zem80_Core.csproj", "{ECD09DA0-F707-4E42-BCFC-4813F9133666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zem80_Core", "..\Zem80\src\Zem80_Core\Zem80_Core.csproj", "{ECD09DA0-F707-4E42-BCFC-4813F9133666}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

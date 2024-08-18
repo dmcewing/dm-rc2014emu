@@ -243,17 +243,17 @@ namespace RC2014.Core.Module
             Array.Copy(contents, startIndex, memory[bank.SelectedPage], startAddress - bank.LOW, length.Value);
         }
 
-        public void SaveState(IFormatter formatter, Stream saveStream)
+        public void SaveState(ICustomFormatter formatter, Stream saveStream)
         {
-            formatter.Serialize(saveStream, this);
+            //formatter.Serialize(saveStream, this);
         }
 
-        public void LoadState(IFormatter formatter, Stream loadStream)
+        public void LoadState(ICustomFormatter formatter, Stream loadStream)
         {
-            RAM512 o = formatter.Deserialize(loadStream) as RAM512;
-            memory = o.memory;
-            bankSettings = o.bankSettings;
-            pageEnable = o.pageEnable;
+            //RAM512 o = formatter.Deserialize(loadStream) as RAM512;
+            //memory = o.memory;
+            //bankSettings = o.bankSettings;
+            //pageEnable = o.pageEnable;
         }
 
         public byte ReadByteAt(ushort offset)
