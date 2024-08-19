@@ -79,7 +79,10 @@ namespace RC2014
                 default:
                     return new IModule[]
                         {
-                            new RAM512("ROMS/RCZ80_std.rom"),
+                            new RAM512("ROMS/RCZ80_std.rom")
+                            {
+                                debugOn = true,
+                            },
                             new SIO() { debugLevel = SIO.DebugLevel.None },
                             new DSRTC(),
                             //new PortMonitor()

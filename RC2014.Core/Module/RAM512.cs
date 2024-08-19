@@ -134,7 +134,7 @@ namespace RC2014.Core.Module
         public void SetData(ushort port, byte value)
         {
             if (debugOn)
-                Debug.WriteLine("Port 0x{0:X2} called with {1}", port,value);
+                Debug.WriteLine("Port 0x{0:X2} called with {1}", port, value);
             switch (port)
             {
                 case MPGENA:
@@ -240,7 +240,11 @@ namespace RC2014.Core.Module
                 length = contents.Length - startIndex;
             }
 
-            Array.Copy(contents, startIndex, memory[bank.SelectedPage], startAddress - bank.LOW, length.Value);
+            if (length == 1)
+                memory[bank.SelectedPage][startAddress - bank.LOW] = contents[0];
+            else
+                Array.Copy(contents, startIndex, memory[bank.SelectedPage], startAddress - bank.LOW, length.Value);
+
         }
 
         public void SaveState(ICustomFormatter formatter, Stream saveStream)

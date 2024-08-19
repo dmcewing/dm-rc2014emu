@@ -57,12 +57,10 @@ namespace RC2014.Core
             //map.Map(new ReadOnlyMemorySegment(File.ReadAllBytes(romPath)), 0);
             //map.Map(new MemorySegment(49152), 16384);
 
-            CPU = new Z80(map: map,  clock: ClockMaker.TimeSlicedClock(
-                    7.5f,
-                    TimeSpan.FromMilliseconds(20)
-                    ));
+            CPU = new Z80(map: map,  clock: ClockMaker.TimeSlicedClock(7.8f, TimeSpan.FromMilliseconds(20)));
             CPU.AfterExecuteInstruction += CPU_AfterExecuteInstruction;
-            //CPU.AfterExecute += DebugOutput_AfterExecute;
+            //CPU.Interrupts.OnMaskableInterrupt += Interrupts_OnMaskableInterrupt;
+            //CPU.AfterExecuteInstruction += DebugOutput_AfterExecute;
 
             foreach(var isource in InteruptSources)
                 isource.InterruptPulse += OnInterruptPulse;
@@ -73,7 +71,6 @@ namespace RC2014.Core
                 CPU.Ports[(byte)handlePort].Connect(ReadPort, WritePort, SignalPortRead, SignalPortWrite);
             }
 
-            CPU.Interrupts.SetMode(InterruptMode.IM1);
             CPU.Interrupts.Enable();
             //CPU.EnableInterrupts();
             //CPU.Interrupts.SetMode(Zem80.Core.CPU.InterruptMode.IM1);
@@ -81,12 +78,8 @@ namespace RC2014.Core
 
         private void OnInterruptPulse(object? sender, EventArgs e)
         {
-            //if (CPU.Interrupts.Enabled)
-            //{ 
-                CPU.Interrupts.RaiseMaskable();
-            //}
+            CPU.Interrupts.RaiseMaskable();
         }
-
         private void SignalPortWrite()
         {
             //Debug.WriteLine("Databus (W): " + CPU.IO.DATA_BUS);
